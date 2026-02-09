@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "essentials",
+  "description": "Personality commands for Claude Code - hype, sass, roast, turbo, catchup",
+  "owner": {
+    "name": "Cameron Sjo",
+    "github": "cameronsjo"
+  },
+  "plugins": [
+    {
+      "name": "essentials",
+      "source": "./.claude-plugin",
+      "description": "Personality commands for celebration, wit, and productivity - hype, sass, roast, turbo, and catchup",
+      "version": "1.2.0"
+    }
+  ]
+}
