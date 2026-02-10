@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "essentials",
-  "description": "Personality commands for Claude Code - hype, sass, roast, turbo, catchup",
+  "description": "Core developer workflow toolkit: productivity commands, brainstorming, git worktrees, skill building, enforcement hooks, and session management",
   "owner": {
     "name": "Cameron Sjo",
     "github": "cameronsjo"
@@ -10,8 +10,8 @@
     {
       "name": "essentials",
       "source": "./.claude-plugin",
-      "description": "Personality commands for celebration, wit, and productivity - hype, sass, roast, turbo, and catchup",
-      "version": "1.2.0"
+      "description": "Core developer workflow toolkit: productivity commands, brainstorming, git worktrees, skill building, enforcement hooks, and session management",
+      "version": "2.0.0"
     }
   ]
 }

@@ -1,0 +1,118 @@
+#!/bin/bash
+# git-clone wrapper that defaults to worktree setup
+# Usage:
+#   git clone <url> [directory]        # Creates worktree setup
+#   git clone --simple <url> [dir]     # Normal clone
+#   git clone --bare <url> [dir]       # Pass through to git
+
+set -e
+
+# Check for --simple flag
+SIMPLE_MODE=false
+ARGS=()
+
+for arg in "$@"; do
+    if [[ "$arg" == "--simple" ]]; then
+        SIMPLE_MODE=true
+    else
+        ARGS+=("$arg")
+    fi
+done
+
+# If --simple or --bare, use normal git clone
+if [[ "$SIMPLE_MODE" == true ]] || [[ "$*" == *"--bare"* ]]; then
+    exec /usr/bin/git clone "${ARGS[@]}"
+fi
+
+# Parse URL and directory from arguments
+URL=""
+DIR=""
+GIT_OPTS=()
+
+for arg in "${ARGS[@]}"; do
+    if [[ "$arg" == -* ]]; then
+        # It's a git option, pass it through
+        GIT_OPTS+=("$arg")
+    elif [[ -z "$URL" ]]; then
+        # First non-option argument is URL
+        URL="$arg"
+    elif [[ -z "$DIR" ]]; then
+        # Second non-option argument is directory
+        DIR="$arg"
+    fi
+done
+
+# Validate URL
+if [[ -z "$URL" ]]; then
+    echo "Error: No repository URL specified"
+    echo ""
+    echo "Usage:"
+    echo "  git clone <url> [directory]        # Creates worktree setup (default)"
+    echo "  git clone --simple <url> [dir]     # Normal clone"
+    echo ""
+    echo "Examples:"
+    echo "  git clone https://github.com/user/repo.git"
+    echo "  git clone --simple https://github.com/user/repo.git"
+    exit 1
+fi
+
+# Determine repository name and bare directory
+if [[ -n "$DIR" ]]; then
+    # User specified directory
+    REPO_NAME="$DIR"
+else
+    # Extract from URL
+    REPO_NAME=$(basename "$URL" .git)
+fi
+
+BARE_DIR="${REPO_NAME}.git"
+
+# Check if directory already exists
+if [[ -d "$BARE_DIR" ]] || [[ -d "$REPO_NAME" ]]; then
+    echo "Error: Directory '$BARE_DIR' or '$REPO_NAME' already exists"
+    exit 1
+fi
+
+echo "📦 Cloning repository with worktree setup..."
+echo ""
+echo "Repository: $URL"
+echo "Bare repo:  $BARE_DIR"
+echo ""
+
+# Clone as bare repository
+echo "1. Creating bare repository..."
+/usr/bin/git clone --bare "${GIT_OPTS[@]}" "$URL" "$BARE_DIR"
+
+cd "$BARE_DIR"
+
+# Detect default branch
+echo ""
+echo "2. Detecting default branch..."
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
+echo "   Default branch: $DEFAULT_BRANCH"
+
+# Create worktree for default branch
+echo ""
+echo "3. Creating worktree for '$DEFAULT_BRANCH'..."
+git worktree add "$DEFAULT_BRANCH" "$DEFAULT_BRANCH"
+
+cd ..
+
+# Success message
+echo ""
+echo "✅ Repository cloned with worktree setup!"
+echo ""
+echo "Structure:"
+echo "  $BARE_DIR/              # Bare repository (git metadata)"
+echo "  $BARE_DIR/$DEFAULT_BRANCH/   # Worktree for $DEFAULT_BRANCH branch"
+echo ""
+echo "Next steps:"
+echo "  cd $BARE_DIR/$DEFAULT_BRANCH"
+echo ""
+echo "Create additional worktrees:"
+echo "  cd $BARE_DIR"
+echo "  git worktree add feature/my-feature"
+echo "  git worktree add -b hotfix/bug-123 hotfix/bug-123"
+echo ""
+echo "List worktrees:"
+echo "  git worktree list"
