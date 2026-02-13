@@ -20,33 +20,27 @@ Scaffold a new project with all the standard tooling. One command, clean slate t
 
 ## Phase 1: Gather Requirements
 
-Use `AskUserQuestion` to collect project details. Two questions max.
+Project name comes from the command argument or conversation context. If unclear, ask.
 
-**Question 1: Project basics**
+Use `AskUserQuestion` — one call, two questions:
 
-Ask for project name and language/framework. Options:
+**Question 1: Language** (single select)
 - TypeScript (Node)
 - Python (uv)
 - Go
-- Other (free text)
 
-**Question 2: Features** (multiselect)
+**Question 2: GitHub visibility** (single select)
+- Public (Recommended)
+- Private
+- Skip — no GitHub repo
 
-All marked "(Recommended)" by default:
-- Beads issue tracking (Recommended)
-- CONTRIBUTING.md (Recommended)
-- SECURITY.md (Recommended)
-- Release Please + GitHub Actions (Recommended)
-- Claude Code config (CLAUDE.md) (Recommended)
-- AI tool symlinks (Recommended)
-- docs/ structure (Recommended)
-- LICENSE (MIT) (Recommended)
+Everything else is included by default. The scaffold is opinionated. If the user wants to skip a feature, they say so upfront or delete it after.
 
 ## Phase 2: Scaffold
 
-Execute selected features. Order matters — git init first, then build on it.
+Order matters — git init first, then build on it.
 
-### Core (always)
+### Core
 
 ```bash
 mkdir -p <project-name>
@@ -55,34 +49,34 @@ git init -b main
 ```
 
 Create:
-- `README.md` — project name, one-line description, "## Getting Started" placeholder
+- `README.md` — project name, one-line description, `## Getting Started` placeholder
 - `.gitignore` — language-appropriate (use GitHub's templates via `gh api`)
 - `CHANGELOG.md` — empty with `# Changelog` header
 
-### Beads (if selected)
+### Beads
 
 ```bash
 bd init
 ```
 
-### CONTRIBUTING.md (if selected)
+### CONTRIBUTING.md
 
-Generate from the user's established pattern:
+Generate from the project's established conventions:
 - Code of Conduct reference
 - Getting Started (fork, clone, setup)
-- Development Setup (language-specific)
+- Development Setup (language-specific prerequisites)
 - Commit format (Conventional Commits)
 - PR guidelines
 
-### SECURITY.md (if selected)
+### SECURITY.md
 
-Generate from the user's established pattern:
+Generate from the project's established conventions:
 - Supported Versions table
 - Reporting a Vulnerability (GitHub private advisory)
 - Response Timeline (48h initial, 7d status, 30d fix)
 - Disclosure Policy
 
-### Release Please (if selected)
+### Release Please
 
 Create `release-please-config.json`:
 
@@ -133,93 +127,57 @@ jobs:
 
 Create `.github/workflows/ci.yml` — language-appropriate test + build workflow.
 
-### Claude Code Config (if selected)
+### Claude Code Config
 
 Create `CLAUDE.md` with:
 - Project name and description
-- Language/framework
-- Key commands (build, test, lint)
-- Project structure placeholder
+- Language/framework and key commands (build, test, lint)
+- Project structure
 
-### AI Tool Symlinks (if selected)
+### AI Tool Symlinks
 
-CLAUDE.md is the source of truth. Create symlinks for other tools:
+CLAUDE.md is the source of truth. Symlink for other tools:
 
 ```bash
-# GitHub Copilot
 mkdir -p .github
-ln -s ../CLAUDE.md .github/copilot-instructions.md
-
-# Cursor (legacy format)
-ln -s CLAUDE.md .cursorrules
-
-# Windsurf
-ln -s CLAUDE.md .windsurfrules
-
-# AGENTS.md standard
-ln -s CLAUDE.md AGENTS.md
-
-# Aider
-ln -s CLAUDE.md CONVENTIONS.md
+ln -s ../CLAUDE.md .github/copilot-instructions.md    # GitHub Copilot
+ln -s CLAUDE.md .cursorrules                           # Cursor
+ln -s CLAUDE.md .windsurfrules                         # Windsurf
+ln -s CLAUDE.md AGENTS.md                              # Emerging standard
+ln -s CLAUDE.md CONVENTIONS.md                         # Aider
 ```
 
-Add symlink targets to `.gitignore` comment block so intent is clear:
-
-```gitignore
-# AI tool symlinks (source of truth: CLAUDE.md)
-# These are symlinks, committed intentionally
-```
-
-### Docs Structure (if selected)
+### Docs Structure
 
 ```bash
 mkdir -p docs/adr
 ```
 
-Create `docs/adr/0001-initial-architecture.md` with ADR template:
-- Status: Proposed
-- Context, Decision, Consequences sections
+Create `docs/adr/0001-initial-architecture.md` — ADR template with Status, Context, Decision, Consequences.
 
-### LICENSE (if selected)
+### LICENSE
 
 MIT license with current year and user's name.
 
-## Phase 3: Language-Specific Setup
+### Language-Specific Setup
 
-### TypeScript (Node)
+**TypeScript:** `npm init -y`, set `"type": "module"` in package.json.
 
-```bash
-npm init -y
-```
+**Python:** `uv init`
 
-Update `package.json` with project name, description, `"type": "module"`.
+**Go:** `go mod init github.com/<user>/<project-name>`
 
-### Python (uv)
-
-```bash
-uv init
-```
-
-### Go
-
-```bash
-go mod init github.com/cameronsjo/<project-name>
-```
-
-## Phase 4: Initial Commit + GitHub
+## Phase 3: Commit + GitHub
 
 ```bash
 git add -A
 git commit -m "feat: initial project scaffold"
 ```
 
-Ask via `AskUserQuestion`:
-- "Create GitHub repo?" — Public (Recommended) / Private / Skip
-
-If yes:
+If GitHub visibility was selected (not "Skip"):
 
 ```bash
-gh repo create cameronsjo/<project-name> --<visibility> --description "<description>" --source . --push
+gh repo create <user>/<project-name> --<visibility> --description "<description>" --source . --push
 ```
 
 ## Final Summary
@@ -229,19 +187,16 @@ A star is born.
 
   Project:     <name>
   Language:    <language>
-  Features:    beads, contributing, security, release-please, claude, ai-symlinks, docs, license
-  GitHub:      https://github.com/cameronsjo/<name>
+  GitHub:      https://github.com/<user>/<name>
 
 Next steps:
   - Fill in CLAUDE.md with project-specific instructions
-  - Add first ADR in docs/adr/
   - Start building
 ```
 
 ## Guidelines
 
-- **Ask twice, execute once** — two AskUserQuestion interactions total (basics + features, then GitHub)
-- **Sensible defaults** — everything recommended, user deselects what they don't want
-- **Language-aware** — .gitignore, CI workflow, and setup commands match the chosen language
+- **Opinionated by default** — include everything, skip nothing unless told
+- **Two interactions max** — requirements gathering, then execution
+- **Language-aware** — .gitignore, CI, setup commands all match the chosen language
 - **Symlinks, not copies** — AI tool configs point back to CLAUDE.md
-- **Don't over-generate** — README gets a placeholder, not a novel. CLAUDE.md gets structure, not speculation

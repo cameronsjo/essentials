@@ -10,7 +10,7 @@ category: workflow
 
 Capture learnings mid-session so future-us doesn't re-discover what present-us already solved.
 
-**Announce at start:** "I'm using the lunch-break skill to capture what we've learned."
+**Announce at start:** "I'm using the lunch-break skill to save session learnings."
 
 ## When to Use
 
@@ -25,16 +25,12 @@ Two things. Fast.
 
 ### 1. Memory Save
 
-Check if a memory directory exists at `~/.claude/projects/<project-key>/memory/MEMORY.md`.
-
-If it exists, use `AskUserQuestion` with **multiselect**. Claude proposes what it observed, user adds via "Other".
-
-Mark the strongest proposals with "(Recommended)".
+If auto memory exists, use `AskUserQuestion` with **multiselect**. Claude proposes what it observed, user adds via "Other". Mark the strongest proposals with "(Recommended)".
 
 Claude's proposals cover two angles:
 
 **What went wrong** — gotchas, false starts, things that cost time:
-- A dependency that didn't exist or behaved unexpectedly
+- A dependency that behaved unexpectedly
 - A config that works differently than documented
 - An API that silently fails or has hidden constraints
 
@@ -47,25 +43,15 @@ If Claude has nothing to propose, skip silently.
 
 ### 2. Quick Commit Check
 
-Run `git status --short` on the **primary working directory only** (not all repos — that's `/have-a-good-evening` territory).
+Run `git status --short` on the **primary working directory only**.
 
 If there are uncommitted changes, mention it: "You have N uncommitted files. Worth a commit before we keep going?"
 
 If clean, say nothing.
 
-## What It Doesn't Do
-
-- No branch cleanup
-- No push
-- No CLAUDE.md revision
-- No multi-repo scanning
-- No stash/artifact checks
-
-Those are `/have-a-good-evening` concerns. This is a lunch break, not a lunch meeting.
-
 ## Guidelines
 
 - **30 seconds, not 5 minutes** — this should feel like a breath, not a process
-- **One interaction max** — the multiselect is it
+- **One interaction** — the multiselect is it
 - **Skip empty** — if nothing worth saving, say "nothing to save" and move on
 - **Keep MEMORY.md under 200 lines** — move overflow to topic files

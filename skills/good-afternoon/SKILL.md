@@ -30,14 +30,12 @@ Run on the **primary working directory**:
 git status --short
 ```
 
-Show what's uncommitted.
-
 ### 2. Read Changed Files
 
 For each modified or new file from git status:
 
 1. **Skip binary files** — check file extension (.png, .jpg, .pdf, .zip, etc.)
-2. **Skip large files** — if file > 10k lines, note it but don't load without asking
+2. **Skip large files** — if file > 10k lines, note it but ask before loading
 3. **Read the file** — use Read tool to load content back into context
 
 To identify changed files:
@@ -50,8 +48,6 @@ git ls-files --others --exclude-standard
 Skip lock files, build artifacts, and generated code.
 
 ### 3. Recent Commits
-
-Show the last 5 commits to jog memory:
 
 ```bash
 git log --oneline -5
@@ -77,16 +73,8 @@ Recent commits:
 Ready to continue.
 ```
 
-## What It Doesn't Do
-
-- No multi-repo scanning — that's `/good-morning` or `/have-a-good-evening` scope
-- No memory operations — that's `/lunch-break`
-- No beads checks — that's `/good-morning`
-- No commits or pushes — that's `/coffee-break`
-
 ## Guidelines
 
 - **Primary repo only** — focus on what you were actively working on
-- **Load actual content** — the point is restoring context, not just listing files
-- **Skip noise** — lock files, build artifacts, generated code don't need loading
-- **Be selective** — only load text files that are part of current work
+- **Load actual content** — the point is restoring context, not listing files
+- **Skip noise** — lock files, build artifacts, generated code

@@ -10,7 +10,7 @@ category: workflow
 
 Documentation housekeeping. Find the mess, sort it out, standardize what's drifted.
 
-**Announce at start:** "I'm using the shuffle-papers skill to tidy up the documentation."
+**Announce at start:** "I'm using the shuffle-papers skill to standardize documentation."
 
 ## When to Use
 
@@ -21,34 +21,23 @@ Documentation housekeeping. Find the mess, sort it out, standardize what's drift
 
 ## Phase 1: Scan
 
-Find all documentation files in the project:
+Find all documentation files:
 
 ```bash
-# Markdown files
 git ls-files '*.md'
-
-# Check for docs/ directory
-ls docs/ 2>/dev/null
-
-# Check for ADRs
-ls docs/adr/ 2>/dev/null
 ```
 
 Read each file's first 20 lines to capture frontmatter and title.
 
 ## Phase 2: Analyze
 
-Check each file against these standards:
-
 ### Naming Conventions
 
 | Location | Convention | Example |
 |----------|-----------|---------|
-| Root level | SCREAMING_SNAKE_CASE | `README.md`, `CONTRIBUTING.md`, `CHANGELOG.md` |
+| Root level | SCREAMING_SNAKE_CASE | `README.md`, `CONTRIBUTING.md` |
 | Everywhere else | kebab-case | `getting-started.md`, `api-overview.md` |
 | ADRs | Numeric prefix + kebab-case | `0001-initial-architecture.md` |
-
-Flag violations: `GettingStarted.md`, `API_Overview.md`, `camelCase.md`.
 
 ### Heading Hierarchy
 
@@ -58,59 +47,44 @@ Flag violations: `GettingStarted.md`, `API_Overview.md`, `camelCase.md`.
 
 ### Frontmatter Consistency
 
-For files with YAML frontmatter:
-- Check required fields exist (varies by type)
-- Check field naming consistency across files
+For files with YAML frontmatter: check field naming consistency across files.
 
 ### Structural Issues
 
-- Files in wrong location (e.g., deep docs at root level, ADRs outside `docs/adr/`)
+- Files in wrong location (deep docs at root, ADRs outside `docs/adr/`)
 - Missing standard files (README, CONTRIBUTING, CHANGELOG, LICENSE)
-- Orphaned docs (referenced by nothing, reference nothing)
-- Duplicate content (similar titles or content across files)
+- Duplicate content across files
 
 ### Markdown Quality
 
 - Blank lines around headings, lists, code blocks
 - Consistent list markers (`-` preferred)
 - Code blocks have language identifiers
-- No trailing whitespace on non-empty lines
 
 ## Phase 3: Present Findings
 
-Group issues by severity:
+Group by severity: **Structural** > **Naming** > **Content**.
 
-**Structural** — wrong location, missing files, duplicates
-**Naming** — convention violations
-**Content** — heading hierarchy, frontmatter, markdown quality
-
-Use `AskUserQuestion` with **multiselect**. Present each fixable issue as an option:
+Use `AskUserQuestion` with **multiselect**:
 
 | Finding | Option | Notes |
 |---------|--------|-------|
-| Wrong naming convention | Rename file-name.md (Recommended) | `mv` + update references |
-| Skipped heading level | Fix heading hierarchy (Recommended) | Auto-fix h1→h3 gaps |
+| Wrong naming convention | Rename file-name.md (Recommended) | `git mv` + update references |
+| Skipped heading level | Fix heading hierarchy (Recommended) | Auto-fix gaps |
 | Missing blank lines | Fix markdown formatting (Recommended) | Auto-fix spacing |
-| File in wrong location | Move to docs/ (Recommended) | `mv` + update references |
+| File in wrong location | Move to docs/ (Recommended) | `git mv` + update references |
 | Missing code block language | [Flag only] | Needs manual language choice |
 | Duplicate content | [Flag only] | Needs manual merge decision |
-| Missing standard file | [Flag only] | Use `/a-star-is-born` for scaffolding |
 
 ## Phase 4: Execute
 
-For approved actions:
+**Renames/Moves**: `git mv` to preserve history, then grep + replace all references.
 
-**Renames**: `git mv` to preserve history, then grep + replace all references.
-
-**Moves**: `git mv` to new location, update any relative links in other docs.
-
-**Heading fixes**: Edit files to fix hierarchy (insert missing levels, don't demote everything).
+**Heading fixes**: Insert missing levels, don't demote everything.
 
 **Markdown formatting**: Fix blank lines, list markers, trailing whitespace.
 
-After all changes, run a quick verification:
-- Check that no markdown links are broken
-- Confirm renamed/moved files are tracked by git
+After all changes, verify no markdown links are broken.
 
 ## Final Summary
 
@@ -126,18 +100,10 @@ Papers shuffled.
 Documentation is tidier.
 ```
 
-## What It Doesn't Do
-
-- No content writing — it organizes, not generates
-- No content deletion — it moves and renames, not removes
-- No cross-repo scanning — operates on current project only
-- No template generation — that's `/a-star-is-born`
-
 ## Guidelines
 
 - **Read-before-write** — scan everything before proposing changes
 - **One interaction** — the multiselect is the only prompt
-- **Preserve git history** — always use `git mv` for renames/moves
-- **Update references** — after any rename/move, grep for old paths and update them
-- **Conservative** — only auto-fix clear violations. Flag ambiguous cases
-- **Respect intent** — if a file's location seems intentional (e.g., root-level guide for a framework), don't force it into docs/
+- **Preserve git history** — always `git mv` for renames/moves
+- **Update references** — after any rename/move, grep for old paths and fix them
+- **Respect intent** — if a file's location seems intentional, don't force it into docs/

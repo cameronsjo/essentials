@@ -10,7 +10,7 @@ category: workflow
 
 Orient at the start of a session. Read-only — no commits, no pushes, no memory saves.
 
-**Announce at start:** "I'm using the good-morning skill to see what's on the desk."
+**Announce at start:** "I'm using the good-morning skill to orient for today's session."
 
 ## When to Use
 
@@ -22,9 +22,7 @@ Orient at the start of a session. Read-only — no commits, no pushes, no memory
 
 ### 1. Read Memory Context
 
-Check if `~/.claude/projects/<project-key>/memory/MEMORY.md` exists.
-
-If it exists, read it and surface key context: gotchas, decisions, where things left off. Keep it to 3-5 bullet points — the highlights reel, not the director's cut.
+If auto memory exists, read it and surface key context: gotchas, decisions, where things left off. Keep it to 3-5 bullet points — the highlights reel.
 
 ### 2. Git Status Scan (parallel)
 
@@ -50,11 +48,9 @@ For repos with changes or unpushed commits:
 git -C <repo> log --oneline -5
 ```
 
-Show the last 5 commits to jog memory on what was happening.
-
 ### 4. Open Issues
 
-If beads is initialized (`.beads/` directory exists in working directory):
+If beads is initialized (`.beads/` exists):
 
 ```bash
 bd list --status open,in_progress
@@ -64,28 +60,18 @@ If beads isn't present, skip silently.
 
 ### 5. Orient Summary
 
-Present findings in a quick summary:
-
 ```
 Good morning. Here's what's on your desk.
 
   Memory:    3 notes from last session
   Repos:     2 with uncommitted work, 1 with unpushed commits
   Issues:    2 open, 1 in progress
-
-[details follow]
 ```
 
-## What It Doesn't Do
-
-- No actions — pure read-only orientation
-- No memory saves — that's `/lunch-break`
-- No commits or pushes — that's `/coffee-break` or `/have-a-good-evening`
-- No file content loading — that's `/good-afternoon`
+Then the details per repo.
 
 ## Guidelines
 
 - **Read-only** — this command changes nothing
 - **Parallel scans** — hit all repos simultaneously
-- **Skip clean** — only surface repos that have something to report
-- **Brief** — orient in 30 seconds, not 5 minutes
+- **Skip clean repos** — only surface what has something to report

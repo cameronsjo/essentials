@@ -1,16 +1,16 @@
 ---
 name: good-evening
 description: >
-  End-of-session cleanup. Multi-Claude awareness, parallel git checks across
-  all repos, batched decisions, CLAUDE.md revision, and memory save.
+  End-of-session cleanup. Parallel git checks across all repos, batched
+  decisions, CLAUDE.md revision, and memory save.
 category: workflow
 ---
 
 # Have a Good Evening
 
-End-of-session cleanup in three phases: safety check, gather and act, save learnings.
+End-of-session cleanup. Gather, act, save.
 
-**Announce at start:** "I'm using the good-evening skill to close up shop."
+**Announce at start:** "I'm using the good-evening skill to run end-of-session cleanup."
 
 ## When to Use
 
@@ -18,32 +18,19 @@ End-of-session cleanup in three phases: safety check, gather and act, save learn
 - Before closing a long session with multiple changes
 - User invokes `/have-a-good-evening`
 
-If the session was purely exploratory (no code changes), skip to **Phase 3: Save Session Learnings**.
+If the session was purely exploratory (no code changes), skip to **Phase 2: Save Session Learnings**.
 
-Use `AskUserQuestion` for all interactive prompts — structured options are faster than open-ended text.
+Use `AskUserQuestion` for all interactive prompts.
 
-## Phase 0: Multi-Claude Check
+## Phase 0: Scope Check
 
-Before touching anything, check for other Claude Code instances:
+Only touch repos and directories that were modified during this session. If a working directory has no changes from this session (no uncommitted work, no unpushed commits), leave it alone.
 
-```bash
-pgrep -af "claude" | grep -v $$ | head -20
-```
+## Phase 1: Gather + Act
 
-If other instances are detected:
+### Gather (parallel, no user interaction)
 
-- **Warn**: "Other Claude instances may be active in these directories"
-- **Ask** via `AskUserQuestion`: "Continue with cleanup? Other instances may have uncommitted work"
-  - "Continue (Recommended)" — proceed with cleanup
-  - "Abort" — stop gracefully, no cleanup
-
-If user chooses abort, end with: "No cleanup performed. Have a good evening."
-
-If no other instances, proceed silently.
-
-## Phase 1: Gather (parallel, no user interaction)
-
-Run these checks **simultaneously across all working directories** using parallel bash calls:
+Run these checks **simultaneously across working directories with changes**:
 
 ```bash
 git -C <repo> status --short          # Uncommitted/unstaged changes
@@ -56,15 +43,13 @@ Also scan for orphaned artifacts: `*.bak`, `*.old`, `*.tmp`.
 
 For repos without a remote, skip the unpushed check and note "no remote."
 
-## Phase 2: Present + Act (one interaction)
-
 ### If everything is clean
 
-Show "All repos clean" and skip to **Phase 3: Save Session Learnings**.
+Show "All repos clean" and skip to **Phase 2: Save Session Learnings**.
 
 ### If action is needed
 
-Present a single summary table (repo, finding, recommended action) with **smart defaults pre-filled**:
+Present a single summary table (repo, finding, recommended action):
 
 | Finding | Default | Notes |
 |---------|---------|-------|
@@ -74,25 +59,21 @@ Present a single summary table (repo, finding, recommended action) with **smart 
 | Stashes | Flag only | Inform, no automatic action |
 | Orphaned files | Flag only | Inform, no automatic action |
 
-Use `AskUserQuestion` with **multiselect** so the user can deselect any actions they don't want. One question, one approval.
+Use `AskUserQuestion` with **multiselect**. One question, one approval.
 
-After approval, execute all approved actions. For commits, generate a commit message from the changes. Show it inline — the user can reject or override via the multiselect, not a separate question.
+After approval, execute. For commits, generate a message following the project's commit conventions (check CLAUDE.md for patterns). If no conventions are loaded, use conventional commits format.
 
-## Phase 3: Save Session Learnings
+## Phase 2: Save Session Learnings
 
 ### Revise CLAUDE.md
 
-Only update CLAUDE.md if something concrete changed this session: a new pattern established, a gotcha discovered, a tool preference confirmed. Don't update for routine work. If nothing warrants a revision, skip silently.
+Only update CLAUDE.md if something concrete changed this session: a new pattern established, a gotcha discovered, a tool preference confirmed. If nothing warrants a revision, skip silently.
 
 ### Update Memory
 
-Check if a memory directory exists at `~/.claude/projects/<project-key>/memory/MEMORY.md`.
+If auto memory exists, use `AskUserQuestion` with **multiselect** — Claude proposes what it observed, user adds via "Other". Mark the strongest proposals with "(Recommended)".
 
-If it exists, use `AskUserQuestion` with **multiselect** — Claude proposes what it observed as options, and the user can add their own via the "Other" free-text option that AskUserQuestion provides automatically. One interaction captures both sides.
-
-Mark the strongest proposals with "(Recommended)".
-
-Claude's proposals should cover two angles:
+Claude's proposals cover two angles:
 
 **What went wrong** — gotchas, false assumptions, things that cost time:
 - A dependency that turned out not to exist
@@ -104,13 +85,11 @@ Claude's proposals should cover two angles:
 - Which tool/workflow turned out to be the right one (and which didn't)
 - Architectural decisions made and why
 
-The user sees Claude's proposals, checks the ones worth keeping, and optionally adds their own. One multiselect, done.
-
-If Claude has nothing to propose, skip silently — don't show an empty picker.
+If Claude has nothing to propose, skip silently.
 
 ### Project-Specific Steps
 
-Check for `.claude/wrap-up.md` in the project root. If found, run those steps after the standard checklist. These are repo-specific cleanup tasks the user has defined.
+Check for `.claude/wrap-up.md` in the project root. If found, run those steps after the standard checklist.
 
 ## Final Summary
 
@@ -127,10 +106,9 @@ See you tomorrow.
 
 ## Guidelines
 
-- **Never auto-commit** — always get user approval via the batched decision
+- **Scope to session** — only touch repos you worked in, leave others alone
+- **One approval round** — do not ask per-repo or per-action sequentially
+- **Parallel gather** — all git checks simultaneously
+- **Never auto-commit** — always get user approval
 - **Never force-push**
 - **Never delete unmerged branches** without explicit confirmation
-- **Check ALL working directories** — not just the primary one
-- **One approval round** — do not ask per-repo or per-action sequentially
-- **Parallel gather** — run all git checks simultaneously, not sequentially
-- **Multi-Claude safety** — always check for other instances before cleanup

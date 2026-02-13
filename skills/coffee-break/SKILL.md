@@ -10,7 +10,7 @@ category: workflow
 
 Mid-session code housekeeping. Commit what's ready, push what's committed, flag what's stashed.
 
-**Announce at start:** "I'm using the coffee-break skill to checkpoint the code."
+**Announce at start:** "I'm using the coffee-break skill to checkpoint uncommitted work."
 
 ## When to Use
 
@@ -47,22 +47,13 @@ Mark safe defaults with "(Recommended)":
 
 ### 3. Execute
 
-For approved commits: generate a commit message from the changes, show inline.
+For approved commits: generate a commit message following the project's commit conventions (check CLAUDE.md for patterns). If no conventions are loaded, use conventional commits format.
 
 For approved pushes: `git push` (pull first if behind).
 
-## What It Doesn't Do
-
-- No memory saves — that's `/lunch-break`
-- No CLAUDE.md revision — that's `/have-a-good-evening`
-- No branch cleanup — that's `/have-a-good-evening`
-- No multi-Claude check — that's `/have-a-good-evening`
-- No orphaned artifact scan — that's `/have-a-good-evening`
-
 ## Guidelines
 
-- **Quick** — 1-2 minutes, not 5
-- **One interaction max** — the multiselect is the only prompt
+- **Quick** — 1-2 minutes total
+- **One interaction** — the multiselect is the only prompt
 - **Parallel gather** — hit all repos simultaneously
 - **Never force-push**
-- **Never auto-commit** — always get approval via the multiselect
