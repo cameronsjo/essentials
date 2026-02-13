@@ -68,12 +68,18 @@ Only update CLAUDE.md if something concrete changed this session: a new pattern 
 
 Check if a memory directory exists at `~/.claude/projects/<project-key>/memory/MEMORY.md`.
 
-If it exists, review the session and **propose** specific learnings — don't ask the user to generate them. Present as a multiselect list so the user can approve, reject, or skip entirely. Examples:
+If it exists, gather learnings from **both sides** of the conversation:
 
+**Claude proposes** what it observed — gotchas, corrections, patterns that emerged:
 - "Pillow is NOT a transitive dep of google-genai — Image.save() is pure stdlib"
-- "Removing a marketplace wipes its enabledPlugins entries from settings.json"
+- "Plugin cache invalidation requires a version bump, not just marketplace update"
 
-If nothing worth saving, skip silently. Don't ask "any learnings?" — that's an interview question.
+**Ask the user** if they have anything to add — one open prompt, not an interview:
+> "Anything you want to remember from this session?"
+
+Present Claude's proposals + any user additions as a single multiselect. The user approves, edits, or skips. One interaction, done.
+
+If Claude has nothing to propose and the user has nothing to add, skip silently.
 
 ### Project-Specific Steps
 
