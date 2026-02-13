@@ -72,14 +72,15 @@ If it exists, use `AskUserQuestion` with **multiselect** — Claude proposes wha
 
 Claude's proposals should cover two angles:
 
-**What went wrong** — gotchas, corrections, false assumptions:
-- "Pillow is NOT a transitive dep of google-genai — Image.save() is pure stdlib"
-- "Plugin cache invalidation requires a version bump, not just marketplace update"
+**What went wrong** — gotchas, false assumptions, things that cost time:
+- A dependency that turned out not to exist
+- A config that behaves differently than documented
+- An API that silently fails under certain conditions
 
-**What we wish we knew at the start** — context that's obvious now but would save time cold:
-- "The plugin cache is version-pinned, not content-hashed — same version = stale cache"
-- "google-genai's Image class handles save() with pure stdlib — no PIL needed anywhere"
-- "Prompt frontmatter is parsed by Claude in validation, pass values as CLI args to scripts"
+**What we wish we knew at the start** — context that's obvious now but invisible cold:
+- How a caching/versioning system actually works under the hood
+- Which tool/workflow turned out to be the right one (and which didn't)
+- Architectural decisions made and why
 
 The user sees Claude's proposals, checks the ones worth keeping, and optionally adds their own. One multiselect, done.
 
