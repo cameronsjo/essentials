@@ -21,10 +21,10 @@ If no fix is known, use `Fix: none known` so it's explicitly marked as an open w
 ### Examples
 
 ```
-[breaking] Removing a marketplace wipes its enabledPlugins entries from settings.json → plugins silently disabled. Fix: back up enabledPlugins before removing marketplaces — (2026-02-08)
-[time-waster] Fork repos clone with main tracking upstream/main → pushes go to upstream instead of origin. Fix: git push -u origin main after cloning — (2026-02-10)
-[data-risk] Plugin cache version-pinned, not content-hashed → same version = stale cache, changes don't propagate. Fix: bump version in plugin.json + reinstall — (2026-02-10)
-[time-waster] Ghost hooks survive plugin removal → session-start errors from missing scripts. Fix: manually audit settings.json for leftover hook references — (2026-02-11)
+[breaking] Removing a parent config entry cascades deletes to child references → features silently disabled. Fix: back up child references before restructuring — (2026-02-08)
+[time-waster] Forked repos clone with main tracking upstream remote → pushes go to wrong remote. Fix: git push -u origin main after cloning — (2026-02-10)
+[data-risk] Cache keys on version field, not content hash → same version serves stale content after changes. Fix: bump version + clear cache on update — (2026-02-10)
+[time-waster] Orphaned hook references survive after removing their source → startup errors from missing scripts. Fix: audit config for leftover references after removal — (2026-02-11)
 ```
 
 ## Severity Levels

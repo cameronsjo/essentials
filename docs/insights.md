@@ -19,11 +19,11 @@ One-liner with context. Category tag, insight text, source/date suffix.
 ### Examples
 
 ```
-[tooling] Plugin cache keys on version in plugin.json, not content hash. Same version = stale cache — essentials debugging (2026-02-10)
-[workflow] Must push workbench to GitHub before marketplace update — it fetches remote, not local — publish pipeline (2026-02-09)
-[debugging] ConPTY rendering issues on Windows — use WSL Ubuntu aliases for clean output — windows setup (2026-01-28)
-[architecture] enabledPlugins format: pluginName@marketplace — removing a marketplace wipes its entries from settings.json — plugin system (2026-02-08)
-[integration] unset CLAUDECODE required when running nested claude CLI commands inside a session — plugin publishing (2026-02-09)
+[tooling] Cache keys on version field, not content hash — same version = stale cache even after changes — dependency debugging (2026-02-10)
+[workflow] Remote registry fetches from origin, not local — must push before sync commands — release pipeline (2026-02-09)
+[debugging] Terminal emulator drops ANSI sequences on Windows — run through WSL for clean rendering — environment setup (2026-01-28)
+[architecture] Removing a parent config entry cascades deletes to child references — back up before restructuring — config management (2026-02-08)
+[integration] Nested CLI invocations fail when parent session env var is set — unset before spawning — scripting (2026-02-09)
 ```
 
 ## Categories
