@@ -8,7 +8,7 @@ category: workflow
 
 # Have a Good Evening
 
-End-of-session cleanup. Gather, act, save.
+End-of-session cleanup in three phases: gather, act, save.
 
 **Announce at start:** "I'm using the good-evening skill to run end-of-session cleanup."
 
@@ -20,17 +20,15 @@ End-of-session cleanup. Gather, act, save.
 
 If the session was purely exploratory (no code changes), skip to **Phase 2: Save Session Learnings**.
 
-Use `AskUserQuestion` for all interactive prompts.
+Use `AskUserQuestion` for all interactive prompts — structured options are faster than open-ended text.
 
-## Phase 0: Scope Check
-
-Only touch repos and directories that were modified during this session. If a working directory has no changes from this session (no uncommitted work, no unpushed commits), leave it alone.
+**Multi-session awareness:** Multiple Claude sessions may be working in the same repos simultaneously. Only touch changes you made in this session. If you see uncommitted work you don't recognize, leave it alone — it belongs to another session.
 
 ## Phase 1: Gather + Act
 
 ### Gather (parallel, no user interaction)
 
-Run these checks **simultaneously across working directories with changes**:
+Run these checks **simultaneously across working directories you touched this session**:
 
 ```bash
 git -C <repo> status --short          # Uncommitted/unstaged changes
@@ -49,7 +47,7 @@ Show "All repos clean" and skip to **Phase 2: Save Session Learnings**.
 
 ### If action is needed
 
-Present a single summary table (repo, finding, recommended action):
+Present a single summary table (repo, finding, recommended action) so the user can see everything at a glance:
 
 | Finding | Default | Notes |
 |---------|---------|-------|
@@ -59,7 +57,7 @@ Present a single summary table (repo, finding, recommended action):
 | Stashes | Flag only | Inform, no automatic action |
 | Orphaned files | Flag only | Inform, no automatic action |
 
-Use `AskUserQuestion` with **multiselect**. One question, one approval.
+Use `AskUserQuestion` with **multiselect** so the user can deselect any actions they don't want. One question, one approval.
 
 After approval, execute. For commits, generate a message following the project's commit conventions (check CLAUDE.md for patterns). If no conventions are loaded, use conventional commits format.
 
@@ -67,11 +65,11 @@ After approval, execute. For commits, generate a message following the project's
 
 ### Revise CLAUDE.md
 
-Only update CLAUDE.md if something concrete changed this session: a new pattern established, a gotcha discovered, a tool preference confirmed. If nothing warrants a revision, skip silently.
+Only update CLAUDE.md if something concrete changed this session: a new pattern established, a gotcha discovered, a tool preference confirmed. Don't update for routine work. If nothing warrants a revision, skip silently.
 
 ### Update Memory
 
-If auto memory exists, use `AskUserQuestion` with **multiselect** — Claude proposes what it observed, user adds via "Other". Mark the strongest proposals with "(Recommended)".
+If auto memory exists, use `AskUserQuestion` with **multiselect** — Claude proposes what it observed as options, user can add their own via "Other". Mark the strongest proposals with "(Recommended)".
 
 Claude's proposals cover two angles:
 
@@ -85,11 +83,13 @@ Claude's proposals cover two angles:
 - Which tool/workflow turned out to be the right one (and which didn't)
 - Architectural decisions made and why
 
+The user sees Claude's proposals, checks the ones worth keeping, and optionally adds their own. One multiselect, done.
+
 If Claude has nothing to propose, skip silently.
 
 ### Project-Specific Steps
 
-Check for `.claude/wrap-up.md` in the project root. If found, run those steps after the standard checklist.
+Check for `.claude/wrap-up.md` in the project root. If found, run those steps after the standard checklist. These are repo-specific cleanup tasks the user has defined.
 
 ## Final Summary
 
@@ -106,7 +106,7 @@ See you tomorrow.
 
 ## Guidelines
 
-- **Scope to session** — only touch repos you worked in, leave others alone
+- **Own your session** — only touch changes you made, leave unrecognized work alone
 - **One approval round** — do not ask per-repo or per-action sequentially
 - **Parallel gather** — all git checks simultaneously
 - **Never auto-commit** — always get user approval
