@@ -68,18 +68,15 @@ Only update CLAUDE.md if something concrete changed this session: a new pattern 
 
 Check if a memory directory exists at `~/.claude/projects/<project-key>/memory/MEMORY.md`.
 
-If it exists, gather learnings from **both sides** of the conversation:
+If it exists, use `AskUserQuestion` with **multiselect** — Claude proposes what it observed as options, and the user can add their own via the "Other" free-text option that AskUserQuestion provides automatically. One interaction captures both sides.
 
-**Claude proposes** what it observed — gotchas, corrections, patterns that emerged:
+Claude's proposals should be specific and concrete — gotchas, corrections, patterns:
 - "Pillow is NOT a transitive dep of google-genai — Image.save() is pure stdlib"
 - "Plugin cache invalidation requires a version bump, not just marketplace update"
 
-**Ask the user** if they have anything to add — one open prompt, not an interview:
-> "Anything you want to remember from this session?"
+The user sees Claude's proposals, checks the ones worth keeping, and optionally adds their own. One multiselect, done.
 
-Present Claude's proposals + any user additions as a single multiselect. The user approves, edits, or skips. One interaction, done.
-
-If Claude has nothing to propose and the user has nothing to add, skip silently.
+If Claude has nothing to propose, skip silently — don't show an empty picker.
 
 ### Project-Specific Steps
 
