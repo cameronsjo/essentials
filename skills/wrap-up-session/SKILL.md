@@ -3,7 +3,7 @@ name: wrap-up-session
 description: >
   End-of-session cleanup. Parallel git checks across all repos, batched decisions,
   CLAUDE.md revision, and optional memory save. Use when the user says they're done
-  or invokes /wrap-up-session.
+  or invokes /wrap-up.
 category: workflow
 ---
 
@@ -15,7 +15,7 @@ End-of-session cleanup in two phases: gather everything in parallel, then one ba
 
 - User says "let's wrap up," "we're done," "ending for today"
 - Before closing a long session with multiple changes
-- User invokes `/wrap-up-session`
+- User invokes `/wrap-up`
 
 If the session was purely exploratory (no code changes), skip to **Save Session Learnings**.
 
@@ -44,19 +44,7 @@ Show "All repos clean" and skip to **Save Session Learnings**.
 
 ### If action is needed
 
-Present a single summary table with **recommended actions pre-filled**:
-
-```
-| Repo               | Finding              | Recommended Action |
-|--------------------|----------------------|--------------------|
-| claude-marketplace | 3 uncommitted files  | Commit             |
-| claude-marketplace | 2 unpushed commits   | Push               |
-| claude-marketplace | branch `feat/old`    | Delete (merged)    |
-| local-stack        | 1 stash              | (flagged)          |
-| local-stack        | 2 .bak files         | (flagged)          |
-```
-
-**Smart defaults:**
+Present a single summary table (repo, finding, recommended action) with **smart defaults pre-filled**:
 
 | Finding | Default | Notes |
 |---------|---------|-------|
@@ -68,29 +56,24 @@ Present a single summary table with **recommended actions pre-filled**:
 
 Use `AskUserQuestion` with **multiselect** so the user can deselect any actions they don't want. One question, one approval.
 
-After approval, execute all approved actions. For commits, ask for a single commit message (or generate one from the changes).
+After approval, execute all approved actions. For commits, generate a commit message from the changes. Show it inline — the user can reject or override via the multiselect, not a separate question.
 
 ## Save Session Learnings
 
 ### Revise CLAUDE.md
 
-Review the session for patterns, gotchas, and context that would help future sessions. Update the project's CLAUDE.md files if warranted.
+Only update CLAUDE.md if something concrete changed this session: a new pattern established, a gotcha discovered, a tool preference confirmed. Don't update for routine work. If nothing warrants a revision, skip silently.
 
 ### Update Memory
 
-Check if a memory directory exists:
+Check if a memory directory exists at `~/.claude/projects/<project-key>/memory/MEMORY.md`.
 
-```
-~/.claude/projects/<project-key>/memory/MEMORY.md
-```
+If it exists, review the session and **propose** specific learnings — don't ask the user to generate them. Present as a multiselect list so the user can approve, reject, or skip entirely. Examples:
 
-If it exists, ask:
+- "Pillow is NOT a transitive dep of google-genai — Image.save() is pure stdlib"
+- "Removing a marketplace wipes its enabledPlugins entries from settings.json"
 
-> "Any learnings from this session to save? (Enter to skip)"
-
-If the user provides learnings, update MEMORY.md. Keep concise — it loads into every session's system prompt (~200 line budget).
-
-If the user skips or provides nothing, move on without asking again.
+If nothing worth saving, skip silently. Don't ask "any learnings?" — that's an interview question.
 
 ### Project-Specific Steps
 
