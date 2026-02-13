@@ -1,12 +1,12 @@
 ---
-name: pit-stop
+name: lunch-break
 description: >
   Mid-session memory save. Capture what we've figured out before it gets lost
   to compaction or context drift. Quick in, quick out.
 category: workflow
 ---
 
-# Pit Stop
+# Lunch Break
 
 Capture learnings mid-session so future-us doesn't re-discover what present-us already solved.
 
@@ -14,8 +14,8 @@ Capture learnings mid-session so future-us doesn't re-discover what present-us a
 
 - Context is getting long and compaction is coming
 - You've just solved something gnarly and want to save the insight
-- User says "pit stop," "save state," "let's capture this"
-- User invokes `/pit-stop`
+- User says "lunch break," "save state," "let's capture this"
+- User invokes `/lunch-break`
 
 ## What It Does
 
@@ -26,6 +26,8 @@ Two things. Fast.
 Check if a memory directory exists at `~/.claude/projects/<project-key>/memory/MEMORY.md`.
 
 If it exists, use `AskUserQuestion` with **multiselect**. Claude proposes what it observed, user adds via "Other".
+
+Mark the strongest proposals with "(Recommended)".
 
 Claude's proposals cover two angles:
 
@@ -43,7 +45,7 @@ If Claude has nothing to propose, skip silently.
 
 ### 2. Quick Commit Check
 
-Run `git status --short` on the **primary working directory only** (not all repos — that's wrap-up territory).
+Run `git status --short` on the **primary working directory only** (not all repos — that's `/have-a-good-evening` territory).
 
 If there are uncommitted changes, mention it: "You have N uncommitted files. Worth a commit before we keep going?"
 
@@ -57,7 +59,7 @@ If clean, say nothing.
 - No multi-repo scanning
 - No stash/artifact checks
 
-Those are `/wrap-up` concerns. This is a pit stop, not a pit crew overhaul.
+Those are `/have-a-good-evening` concerns. This is a lunch break, not a lunch meeting.
 
 ## Guidelines
 

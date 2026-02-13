@@ -13,7 +13,11 @@
     "hooks",
     "enforcement",
     "session",
-    "turbo",
-    "catchup"
+    "daily-rhythm",
+    "good-morning",
+    "coffee-break",
+    "lunch-break",
+    "good-afternoon",
+    "good-evening"
   ]
 }

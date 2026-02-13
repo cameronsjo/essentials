@@ -1,25 +1,43 @@
 ---
-name: wrap-up-session
+name: good-evening
 description: >
-  End-of-session cleanup. Parallel git checks across all repos, batched decisions,
-  CLAUDE.md revision, and optional memory save. Use when the user says they're done
-  or invokes /wrap-up.
+  End-of-session cleanup. Multi-Claude awareness, parallel git checks across
+  all repos, batched decisions, CLAUDE.md revision, and memory save.
 category: workflow
 ---
 
-# Wrap Up Session
+# Have a Good Evening
 
-End-of-session cleanup in two phases: gather everything in parallel, then one batched decision.
+End-of-session cleanup in three phases: safety check, gather and act, save learnings.
 
 ## When to Use
 
-- User says "let's wrap up," "we're done," "ending for today"
+- User says "let's wrap up," "we're done," "ending for today," "good evening"
 - Before closing a long session with multiple changes
-- User invokes `/wrap-up`
+- User invokes `/have-a-good-evening`
 
-If the session was purely exploratory (no code changes), skip to **Save Session Learnings**.
+If the session was purely exploratory (no code changes), skip to **Phase 3: Save Session Learnings**.
 
 Use `AskUserQuestion` for all interactive prompts — structured options are faster than open-ended text.
+
+## Phase 0: Multi-Claude Check
+
+Before touching anything, check for other Claude Code instances:
+
+```bash
+pgrep -af "claude" | grep -v $$ | head -20
+```
+
+If other instances are detected:
+
+- **Warn**: "Other Claude instances may be active in these directories"
+- **Ask** via `AskUserQuestion`: "Continue with cleanup? Other instances may have uncommitted work"
+  - "Continue (Recommended)" — proceed with cleanup
+  - "Abort" — stop gracefully, no cleanup
+
+If user chooses abort, end with: "No cleanup performed. Have a good evening."
+
+If no other instances, proceed silently.
 
 ## Phase 1: Gather (parallel, no user interaction)
 
@@ -40,7 +58,7 @@ For repos without a remote, skip the unpushed check and note "no remote."
 
 ### If everything is clean
 
-Show "All repos clean" and skip to **Save Session Learnings**.
+Show "All repos clean" and skip to **Phase 3: Save Session Learnings**.
 
 ### If action is needed
 
@@ -48,9 +66,9 @@ Present a single summary table (repo, finding, recommended action) with **smart 
 
 | Finding | Default | Notes |
 |---------|---------|-------|
-| Uncommitted changes | Commit | User provides message at execution time |
-| Unpushed commits | Push | Safe — normal push, never force |
-| Merged branches | Delete | Safe — already merged (squash-merged won't show — note this) |
+| Uncommitted changes | Commit (Recommended) | Generate message at execution time |
+| Unpushed commits | Push (Recommended) | Normal push, never force |
+| Merged branches | Delete (Recommended) | Already merged (squash-merged won't show — note this) |
 | Stashes | Flag only | Inform, no automatic action |
 | Orphaned files | Flag only | Inform, no automatic action |
 
@@ -58,7 +76,7 @@ Use `AskUserQuestion` with **multiselect** so the user can deselect any actions 
 
 After approval, execute all approved actions. For commits, generate a commit message from the changes. Show it inline — the user can reject or override via the multiselect, not a separate question.
 
-## Save Session Learnings
+## Phase 3: Save Session Learnings
 
 ### Revise CLAUDE.md
 
@@ -69,6 +87,8 @@ Only update CLAUDE.md if something concrete changed this session: a new pattern 
 Check if a memory directory exists at `~/.claude/projects/<project-key>/memory/MEMORY.md`.
 
 If it exists, use `AskUserQuestion` with **multiselect** — Claude proposes what it observed as options, and the user can add their own via the "Other" free-text option that AskUserQuestion provides automatically. One interaction captures both sides.
+
+Mark the strongest proposals with "(Recommended)".
 
 Claude's proposals should cover two angles:
 
@@ -90,28 +110,17 @@ If Claude has nothing to propose, skip silently — don't show an empty picker.
 
 Check for `.claude/wrap-up.md` in the project root. If found, run those steps after the standard checklist. These are repo-specific cleanup tasks the user has defined.
 
-Example `.claude/wrap-up.md`:
-
-```markdown
-# Project Wrap-Up
-
-- Run `make clean` before closing
-- Ensure Docker containers are stopped: `docker compose down`
-- Check for orphaned migration files in `db/migrations/`
-```
-
 ## Final Summary
 
 ```
-Session wrap-up complete.
+Good evening. Here's what we wrapped up:
 
-  Repos:     2 clean
+  Repos:     12 clean, 2 tidied
   Commits:   all pushed
   Branches:  1 deleted
-  CLAUDE.md: updated
   Memory:    updated
 
-Ready to close.
+See you tomorrow.
 ```
 
 ## Guidelines
@@ -122,3 +131,4 @@ Ready to close.
 - **Check ALL working directories** — not just the primary one
 - **One approval round** — do not ask per-repo or per-action sequentially
 - **Parallel gather** — run all git checks simultaneously, not sequentially
+- **Multi-Claude safety** — always check for other instances before cleanup
