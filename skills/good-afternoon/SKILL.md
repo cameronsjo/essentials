@@ -10,6 +10,8 @@ category: workflow
 
 Welcome back. Restore context after a break, a `/clear`, or compaction.
 
+**Announce at start:** "I'm using the good-afternoon skill to restore working context."
+
 ## When to Use
 
 - After `/clear`

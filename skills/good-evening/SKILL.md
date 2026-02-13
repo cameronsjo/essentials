@@ -10,6 +10,8 @@ category: workflow
 
 End-of-session cleanup in three phases: safety check, gather and act, save learnings.
 
+**Announce at start:** "I'm using the good-evening skill to close up shop."
+
 ## When to Use
 
 - User says "let's wrap up," "we're done," "ending for today," "good evening"

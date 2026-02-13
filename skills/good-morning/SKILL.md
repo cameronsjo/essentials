@@ -10,6 +10,8 @@ category: workflow
 
 Orient at the start of a session. Read-only — no commits, no pushes, no memory saves.
 
+**Announce at start:** "I'm using the good-morning skill to see what's on the desk."
+
 ## When to Use
 
 - Start of a new day/session

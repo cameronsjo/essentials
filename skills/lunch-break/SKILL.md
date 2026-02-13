@@ -10,6 +10,8 @@ category: workflow
 
 Capture learnings mid-session so future-us doesn't re-discover what present-us already solved.
 
+**Announce at start:** "I'm using the lunch-break skill to capture what we've learned."
+
 ## When to Use
 
 - Context is getting long and compaction is coming

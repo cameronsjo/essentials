@@ -10,6 +10,8 @@ category: workflow
 
 Mid-session code housekeeping. Commit what's ready, push what's committed, flag what's stashed.
 
+**Announce at start:** "I'm using the coffee-break skill to checkpoint the code."
+
 ## When to Use
 
 - Natural pause point between tasks
