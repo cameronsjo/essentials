@@ -51,6 +51,14 @@ For approved commits: generate a commit message following the project's commit c
 
 For approved pushes: `git push` (pull first if behind).
 
+### 4. Insights Nudge
+
+If the session has been productive (commits made, problems solved), mention after execution:
+
+> Anything worth noting? `/field-notes` to capture insights.
+
+One line. No interaction. Just a pointer.
+
 ## Guidelines
 
 - **Quick** — 1-2 minutes total
