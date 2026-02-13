@@ -89,7 +89,7 @@ If Claude has nothing to propose, skip silently.
 
 ### Project-Specific Steps
 
-Check for `.claude/wrap-up.md` in the project root. If found, run those steps after the standard checklist. These are repo-specific cleanup tasks the user has defined.
+Check for `.claude/good-evening.md` in the project root. If found, run those steps after the standard checklist. These are repo-specific cleanup tasks the user has defined.
 
 ## Final Summary
 
