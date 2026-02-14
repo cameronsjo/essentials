@@ -11,6 +11,17 @@
           }
         ]
       }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/insight-reminder.sh",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }

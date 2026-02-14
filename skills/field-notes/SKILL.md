@@ -37,7 +37,13 @@ Read the project's auto memory files to understand what's already captured:
 
 ### 3. Propose Entries
 
-Review the current session for moments that meet the threshold:
+Scan the session for candidates. Primary sources:
+
+- **`★ Insight` blocks** — these have already been deemed noteworthy during the session. Treat them as pre-formatted candidates; distill to the convention format
+- **Debugging detours** — root causes, misleading errors, unexpected behavior
+- **Process friction** — sequencing requirements, tool quirks, config surprises
+
+Apply the threshold:
 
 - **Insights**: Would this save 15 minutes if known at session start?
 - **Gotchas**: Did this cost time? Could it bite again? Include the fix/mitigation if known
