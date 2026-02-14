@@ -61,6 +61,27 @@ Use `AskUserQuestion` with **multiselect** so the user can deselect any actions 
 
 After approval, execute. For commits, generate a message following the project's commit conventions (check CLAUDE.md for patterns). If no conventions are loaded, use conventional commits format.
 
+## Phase 1.5: Session Summary Check
+
+Before saving learnings, check whether this session warrants a full writeup.
+
+**Trigger conditions** (any of these):
+
+- Built a multi-step pipeline or workflow
+- Evaluated/compared multiple tools or approaches
+- Investigated a non-trivial bug with a meaningful root cause
+- Made architectural decisions with trade-offs worth documenting
+- Discovered how a system works through experimentation
+
+If any apply, use `AskUserQuestion`:
+
+- **"Write field report (Recommended)"** — run the `field-report` skill (read `skills/field-report/SKILL.md`)
+- **"Skip"** — move on to Phase 2
+
+If the session was routine feature work or simple fixes, skip silently.
+
+After a session summary is written, its new file becomes an uncommitted change — the Phase 2 memory save and final commit check will pick it up naturally.
+
 ## Phase 2: Save Session Learnings
 
 ### Revise CLAUDE.md

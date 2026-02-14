@@ -58,7 +58,25 @@ bd list --status open,in_progress
 
 If beads isn't present, skip silently.
 
-### 5. Orient Summary
+### 5. Recent Field Reports
+
+Check for `docs/field-reports/` in working directories. If found, surface the most recent entries (last 7 days by git commit date):
+
+```bash
+git -C <repo> log --diff-filter=A --name-only --pretty=format:"%H %as" -- "docs/field-reports/*.md" | head -10
+```
+
+If recent reports exist, list them with titles (read the `# ` heading from each file):
+
+```
+  Reports:   2 recent
+    - Error Page Image Pipeline (2026-02-13)
+    - Auth Token Refresh Investigation (2026-02-11)
+```
+
+If none exist or the directory doesn't exist, skip silently.
+
+### 6. Orient Summary
 
 ```
 Good morning. Here's what's on your desk.
@@ -66,6 +84,7 @@ Good morning. Here's what's on your desk.
   Memory:    3 notes from last session
   Repos:     2 with uncommitted work, 1 with unpushed commits
   Issues:    2 open, 1 in progress
+  Reports:   1 recent (Error Page Image Pipeline)
 ```
 
 Then the details per repo.
