@@ -36,7 +36,7 @@ except:
   fi
 
   if [[ "$line_count" -gt 200 ]]; then
-    echo "MEMORY.md is ${line_count} lines (limit: 200). Fan out to topic files or prune stale entries. Run \`/field-notes review\` to clean up."
+    echo "MEMORY.md is ${line_count} lines (limit: 200). Fan out to topic files or prune stale entries. Run \`/field-notes review\` to clean up." >&2
     exit 2
   elif [[ "$line_count" -gt 180 ]]; then
     echo "MEMORY.md is ${line_count}/200 lines. Consider running \`/field-notes review\`."
