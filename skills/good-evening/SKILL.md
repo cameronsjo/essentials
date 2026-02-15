@@ -16,7 +16,7 @@ End-of-session cleanup in three phases: gather, act, save.
 
 - User says "let's wrap up," "we're done," "ending for today," "good evening"
 - Before closing a long session with multiple changes
-- User invokes `/have-a-good-evening`
+- User invokes `/good-evening`
 
 If the session was purely exploratory (no code changes), skip to **Phase 2: Save Session Learnings**.
 
