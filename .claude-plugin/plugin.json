@@ -1,13 +1,12 @@
 {
   "name": "essentials",
-  "description": "Core developer workflow toolkit: productivity commands, brainstorming, git worktrees, skill building, enforcement hooks, and session management",
+  "description": "Core developer workflow toolkit: productivity commands, git worktrees, skill building, enforcement hooks, and session management",
   "author": {
     "name": "cameronsjo"
   },
   "keywords": [
     "productivity",
     "workflow",
-    "brainstorming",
     "worktrees",
     "hooks",
     "enforcement",
