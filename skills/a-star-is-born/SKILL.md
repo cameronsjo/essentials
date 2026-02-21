@@ -1,8 +1,8 @@
 ---
 name: a-star-is-born
 description: >
-  Scaffold a new project from scratch. Beads, CONTRIBUTING, SECURITY, release-please,
-  GitHub Actions, Claude Code config, docs structure, and AI tool symlinks.
+  Scaffold a new project from scratch. Beads, CONTRIBUTING, SECURITY, release-please (configured but disabled),
+  GitHub Actions CI, AGENTS.md config, Biome, docs structure, and AI tool symlinks.
 category: workflow
 ---
 
@@ -76,7 +76,9 @@ Generate from the project's established conventions:
 - Response Timeline (48h initial, 7d status, 30d fix)
 - Disclosure Policy
 
-### Release Please
+### Release Please (Configured but Disabled)
+
+Create the config files so release-please is ready to enable, but **do not enable the workflow by default**.
 
 Create `release-please-config.json`:
 
@@ -102,14 +104,20 @@ Create `.release-please-manifest.json`:
 }
 ```
 
-Create `.github/workflows/release-please.yml`:
+Create `.github/workflows/release-please.yml` with the workflow **disabled** (`on: workflow_dispatch` only, no push trigger):
 
 ```yaml
+# Release Please — configured but disabled by default.
+# To enable automatic releases on push to main, replace the `on:` block with:
+#
+#   on:
+#     push:
+#       branches: [main]
+#
 name: Release Please
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -125,26 +133,106 @@ jobs:
           manifest-file: .release-please-manifest.json
 ```
 
-Create `.github/workflows/ci.yml` — language-appropriate test + build workflow.
+### CI Workflow
 
-### Claude Code Config
+Create `.github/workflows/ci.yml` — language-appropriate test, build, and lint workflow. For TypeScript projects, use `biome check` as the lint step.
 
-Create `CLAUDE.md` with:
+### Modern Tooling (Biome & Friends)
+
+Use the modern 2025/2026 developer toolkit. **Language-specific defaults below.**
+
+#### TypeScript
+
+- **Biome** for linting + formatting (replaces ESLint + Prettier)
+  ```bash
+  npm install --save-dev --save-exact @biomejs/biome
+  npx @biomejs/biome init
+  ```
+  Then update the generated `biome.json` to use the recommended preset:
+  ```json
+  {
+    "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+    "organizeImports": {
+      "enabled": true
+    },
+    "linter": {
+      "enabled": true,
+      "rules": {
+        "recommended": true
+      }
+    },
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "space",
+      "indentWidth": 2
+    }
+  }
+  ```
+- Add scripts to `package.json`:
+  ```json
+  {
+    "scripts": {
+      "check": "biome check .",
+      "check:fix": "biome check --fix .",
+      "format": "biome format --write ."
+    }
+  }
+  ```
+
+#### Python
+
+- **Ruff** for linting + formatting (replaces flake8, black, isort)
+  ```bash
+  uv add --dev ruff
+  ```
+  Create `ruff.toml`:
+  ```toml
+  target-version = "py312"
+  line-length = 88
+
+  [lint]
+  select = ["E", "F", "I", "N", "UP", "RUF"]
+
+  [format]
+  quote-style = "double"
+  ```
+
+#### Go
+
+- **golangci-lint** for comprehensive linting
+  ```bash
+  # CI installs via action; local install is optional
+  ```
+  Create `.golangci.yml`:
+  ```yaml
+  linters:
+    enable:
+      - errcheck
+      - govet
+      - staticcheck
+      - unused
+      - gosimple
+      - ineffassign
+  ```
+
+### AGENTS.md — Primary AI Config
+
+Create `AGENTS.md` as the **primary** AI instruction file with:
 - Project name and description
-- Language/framework and key commands (build, test, lint)
+- Language/framework and key commands (build, test, lint, format)
 - Project structure
 
 ### AI Tool Symlinks
 
-CLAUDE.md is the source of truth. Symlink for other tools:
+AGENTS.md is the source of truth. Symlink for other tools:
 
 ```bash
 mkdir -p .github
-ln -s ../CLAUDE.md .github/copilot-instructions.md    # GitHub Copilot
-ln -s CLAUDE.md .cursorrules                           # Cursor
-ln -s CLAUDE.md .windsurfrules                         # Windsurf
-ln -s CLAUDE.md AGENTS.md                              # Emerging standard
-ln -s CLAUDE.md CONVENTIONS.md                         # Aider
+ln -s ../AGENTS.md .github/copilot-instructions.md    # GitHub Copilot
+ln -s AGENTS.md .cursorrules                           # Cursor
+ln -s AGENTS.md .windsurfrules                         # Windsurf
+ln -s AGENTS.md CLAUDE.md                              # Claude Code
+ln -s AGENTS.md CONVENTIONS.md                         # Aider
 ```
 
 ### Docs Structure
@@ -161,11 +249,11 @@ MIT license with current year and user's name.
 
 ### Language-Specific Setup
 
-**TypeScript:** `npm init -y`, set `"type": "module"` in package.json.
+**TypeScript:** `npm init -y`, set `"type": "module"` in package.json, install Biome (see Modern Tooling above).
 
-**Python:** `uv init`
+**Python:** `uv init`, add Ruff (see Modern Tooling above).
 
-**Go:** `go mod init github.com/<user>/<project-name>`
+**Go:** `go mod init github.com/<user>/<project-name>`, add golangci-lint config (see Modern Tooling above).
 
 ## Phase 3: Commit + GitHub
 
@@ -188,9 +276,11 @@ A star is born.
   Project:     <name>
   Language:    <language>
   GitHub:      https://github.com/<user>/<name>
+  Lint/Format: <biome|ruff|golangci-lint>
 
 Next steps:
-  - Fill in CLAUDE.md with project-specific instructions
+  - Fill in AGENTS.md with project-specific instructions
+  - Enable release-please when you're ready for automated releases
   - Start building
 ```
 
@@ -198,5 +288,7 @@ Next steps:
 
 - **Opinionated by default** — include everything, skip nothing unless told
 - **Two interactions max** — requirements gathering, then execution
-- **Language-aware** — .gitignore, CI, setup commands all match the chosen language
-- **Symlinks, not copies** — AI tool configs point back to CLAUDE.md
+- **Language-aware** — .gitignore, CI, setup commands, and linting all match the chosen language
+- **Symlinks, not copies** — AI tool configs point back to AGENTS.md
+- **Modern toolkit** — Biome over ESLint/Prettier, Ruff over flake8/black, golangci-lint for Go
+- **Release-please ready, not running** — config files present, workflow disabled until opted in
