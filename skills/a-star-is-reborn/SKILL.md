@@ -26,7 +26,7 @@ Read the existing project to understand what's already in place.
 Run these checks (all in parallel where possible):
 
 1. **Language detection** — check for `package.json` (TypeScript/Node), `pyproject.toml` / `setup.py` (Python), `go.mod` (Go)
-2. **Existing config files** — check for `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.windsurfrules`, `CONVENTIONS.md`, `.github/copilot-instructions.md`
+2. **Existing config files** — check for `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.windsurfrules`, `.clinerules`, `GEMINI.md`, `CONVENTIONS.md`, `.replit.md`, `.github/copilot-instructions.md`, `.cursor/rules/`, `.windsurf/rules/`
 3. **Existing lint/format tools** — check for `.eslintrc*`, `.prettierrc*`, `biome.json`, `ruff.toml`, `.golangci.yml`
 4. **Existing CI** — check for `.github/workflows/`
 5. **Existing release-please** — check for `release-please-config.json`, `.release-please-manifest.json`
@@ -60,16 +60,24 @@ If `CLAUDE.md` exists as a regular file (not a symlink), **migrate it**:
 
 ### AI Tool Symlinks
 
-AGENTS.md is the source of truth. Create symlinks for other tools (skip if target already exists as a non-symlink file):
+AGENTS.md is the source of truth. Create symlinks for every major AI coding tool (skip if target already exists as a non-symlink file):
 
 ```bash
 mkdir -p .github
 ln -sf ../AGENTS.md .github/copilot-instructions.md    # GitHub Copilot
-ln -sf AGENTS.md .cursorrules                           # Cursor
-ln -sf AGENTS.md .windsurfrules                         # Windsurf
 ln -sf AGENTS.md CLAUDE.md                              # Claude Code
+ln -sf AGENTS.md .cursorrules                           # Cursor (legacy, still read)
+ln -sf AGENTS.md .windsurfrules                         # Windsurf (legacy, still read)
+ln -sf AGENTS.md .clinerules                            # Cline / Roo Code
+ln -sf AGENTS.md GEMINI.md                              # Gemini CLI
 ln -sf AGENTS.md CONVENTIONS.md                         # Aider
+ln -sf AGENTS.md .replit.md                             # Replit
 ```
+
+> **Note on directory-based rules:** Cursor (`.cursor/rules/`) and Windsurf (`.windsurf/rules/`)
+> now support directory-based rule files for granular per-context instructions. The flat-file
+> symlinks above still work and are read by these tools. If the user needs per-directory rules,
+> they can create those directories later — but the single-file symlink covers the common case.
 
 ### Modern Tooling (Biome & Friends)
 

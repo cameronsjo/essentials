@@ -224,16 +224,24 @@ Create `AGENTS.md` as the **primary** AI instruction file with:
 
 ### AI Tool Symlinks
 
-AGENTS.md is the source of truth. Symlink for other tools:
+AGENTS.md is the source of truth. Symlink for every major AI coding tool:
 
 ```bash
 mkdir -p .github
 ln -s ../AGENTS.md .github/copilot-instructions.md    # GitHub Copilot
-ln -s AGENTS.md .cursorrules                           # Cursor
-ln -s AGENTS.md .windsurfrules                         # Windsurf
 ln -s AGENTS.md CLAUDE.md                              # Claude Code
+ln -s AGENTS.md .cursorrules                           # Cursor (legacy, still read)
+ln -s AGENTS.md .windsurfrules                         # Windsurf (legacy, still read)
+ln -s AGENTS.md .clinerules                            # Cline / Roo Code
+ln -s AGENTS.md GEMINI.md                              # Gemini CLI
 ln -s AGENTS.md CONVENTIONS.md                         # Aider
+ln -s AGENTS.md .replit.md                             # Replit
 ```
+
+> **Note on directory-based rules:** Cursor (`.cursor/rules/`) and Windsurf (`.windsurf/rules/`)
+> now support directory-based rule files for granular per-context instructions. The flat-file
+> symlinks above still work and are read by these tools. If the user needs per-directory rules,
+> they can create those directories later — but the single-file symlink covers the common case.
 
 ### Docs Structure
 
