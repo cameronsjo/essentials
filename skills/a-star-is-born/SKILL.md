@@ -200,9 +200,14 @@ git add -A
 git commit -m "feat: initial project scaffold"
 ```
 
-If GitHub visibility was selected:
+If GitHub visibility was selected, generate a description first:
+
+1. Read `README.md`, `package.json` / `pyproject.toml` / `go.mod` for context
+2. Generate a concise description (max 350 chars): action-oriented, specific, includes key differentiators — no generic phrasing like "A tool for..."
+3. Create the repo:
+
 ```bash
-gh repo create <user>/<project-name> --<visibility> --description "<description>" --source . --push
+gh repo create <user>/<project-name> --<visibility> --description "<generated-description>" --source . --push
 ```
 
 After repo creation, enable Actions PR permissions so release-please can create PRs:
