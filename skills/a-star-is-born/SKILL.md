@@ -35,7 +35,7 @@ Classify: **new repo** (no `.git` or no commits) vs **existing repo** (has commi
 
 Project name comes from the command argument or conversation context. If unclear, ask.
 
-Use `AskUserQuestion` — one call, two questions:
+Use `AskUserQuestion` — one call, three questions:
 
 **Question 1** (header: "Language", single select):
 Which language?
@@ -49,7 +49,12 @@ GitHub visibility?
 - Private
 - Skip — no GitHub repo
 
-Then scaffold **everything**. The scaffold is opinionated — no opt-outs. If the user wants to skip something, they say so upfront or delete it after.
+**Question 3** (header: "OpenSpec", single select):
+Initialize OpenSpec for spec-driven development?
+- Yes — install and configure OpenSpec + Beads workflow (Recommended)
+- Skip — I'll add it later
+
+Then scaffold everything selected. The scaffold is opinionated by default — OpenSpec is the only opt-out question. If the user wants to skip other components, they say so upfront or delete them after.
 
 ### Existing Repo Questions
 
@@ -103,7 +108,9 @@ Create:
 bd init
 ```
 
-### OpenSpec
+### OpenSpec (if selected)
+
+**Skip this section if the user opted out of OpenSpec.**
 
 ```bash
 # Install if not available
@@ -135,7 +142,7 @@ Create `AGENTS.md` as the **primary** AI instruction file with:
 - Language/framework and key commands (build, test, lint, format)
 - Project structure
 
-Include the OpenSpec + Beads workflow section:
+If OpenSpec was initialized, include the workflow section:
 
 ```markdown
 ## Workflow: OpenSpec + Beads
@@ -321,16 +328,16 @@ A star is born.
   Language:    <language>
   GitHub:      https://github.com/<user>/<name>
   Lint/Format: <biome|ruff|golangci-lint>
-  OpenSpec:    initialized
+  OpenSpec:    <initialized|skipped>
   Beads:       initialized
 
   Added:       <list of components added>
-  Skipped:     <list of components that already existed>
+  Skipped:     <list of components that already existed or opted out>
 
 Next steps:
   - Fill in AGENTS.md with project-specific instructions
   - Enable release-please when you're ready for automated releases
-  - Run /opsx:new to start your first change proposal
+  - Run /opsx:new to start your first change proposal (if OpenSpec initialized)
   - Start building
 ```
 
@@ -344,4 +351,4 @@ Next steps:
 - **Symlinks, not copies** — AI tool configs point back to AGENTS.md
 - **Modern toolkit** — Biome over ESLint/Prettier, Ruff over flake8/black, golangci-lint for Go
 - **Release-please ready, not running** — config files present, workflow disabled until opted in
-- **OpenSpec + Beads from day one** — spec-driven planning and task tracking wired together
+- **OpenSpec optional** — recommended but not forced; only external dependency with an opt-out
