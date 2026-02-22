@@ -201,7 +201,9 @@ Create `.release-please-manifest.json`:
 Create `.github/workflows/release-please.yml` (disabled by default):
 ```yaml
 # Release Please — configured but disabled by default.
-# To enable, replace on: block with: on: push: branches: [main]
+# To enable: replace on: block with: on: push: branches: [main]
+# Also required: enable "Allow GitHub Actions to create and approve pull requests"
+# in repo Settings → Actions → General → Workflow permissions.
 name: Release Please
 on:
   workflow_dispatch: {}

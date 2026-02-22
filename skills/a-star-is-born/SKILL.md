@@ -157,6 +157,12 @@ Create `Makefile` with `help` as default target. Language-appropriate targets fo
 
 Create config files ready to enable but **disabled by default** (`workflow_dispatch` only). See `templates.md` for all three files.
 
+**Repo-level setting required:** After creating the GitHub repo (or on existing repos), enable "Allow GitHub Actions to create and approve pull requests" under Settings → Actions → General → Workflow permissions. Without this, release-please will fail even though the workflow YAML has `pull-requests: write`. Run:
+
+```bash
+gh api repos/{owner}/{repo}/actions/permissions/workflow -X PUT -f default_workflow_permissions=write -F can_approve_pull_request_reviews=true
+```
+
 ### CI Workflow
 
 Create `.github/workflows/ci.yml` — language-appropriate test, build, and lint workflow. Use `biome check` (TS), `ruff check` (Python), or `golangci-lint run` (Go) as the lint step.
@@ -199,6 +205,11 @@ If GitHub visibility was selected:
 gh repo create <user>/<project-name> --<visibility> --description "<description>" --source . --push
 ```
 
+After repo creation, enable Actions PR permissions so release-please can create PRs:
+```bash
+gh api repos/<user>/<project-name>/actions/permissions/workflow -X PUT -f default_workflow_permissions=write -F can_approve_pull_request_reviews=true
+```
+
 ### Existing repos
 
 ```bash
@@ -226,6 +237,8 @@ A star is born.
 Next steps:
   - Fill in AGENTS.md with project-specific instructions
   - Enable release-please when you're ready for automated releases
+    (also enable "Allow GitHub Actions to create and approve pull requests"
+     in repo Settings → Actions → General → Workflow permissions)
   - Run /opsx:new to start your first change proposal (if OpenSpec initialized)
   - Start building
 ```
