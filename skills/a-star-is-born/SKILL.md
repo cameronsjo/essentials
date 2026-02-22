@@ -1,46 +1,90 @@
 ---
 name: a-star-is-born
 description: >
-  Scaffold a new project from scratch. Beads, CONTRIBUTING, SECURITY, release-please (configured but disabled),
-  GitHub Actions CI, AGENTS.md config, Biome, docs structure, and AI tool symlinks.
+  Scaffold a new project or retrofit an existing one. Beads, OpenSpec, AGENTS.md,
+  release-please (disabled), CI, Biome/Ruff, AI symlinks, docs structure.
 category: workflow
 ---
 
 # A Star Is Born
 
-Scaffold a new project with all the standard tooling. One command, clean slate to production-ready.
+Scaffold a new project or retrofit an existing one with standard tooling. Re-entrant — safe to run on projects that already have some pieces in place.
 
 **Announce at start:** "I'm using the a-star-is-born skill to scaffold this project."
 
 ## When to Use
 
 - Starting a brand new project
-- User says "new project," "scaffold," "init," "a star is born"
+- Retrofitting an existing project with missing essentials
+- User says "new project," "scaffold," "init," "a star is born," "upgrade," "retrofit," "add essentials," "modernize"
 - User invokes `/a-star-is-born`
 
-## Phase 1: Gather Requirements
+## Phase 1: Detect & Ask
+
+### Detection (silent, no user interaction)
+
+Run these checks in parallel:
+
+1. **Repo state** — does `.git` exist? Any commits? Is there a remote?
+2. **Language** — check for `package.json` (TypeScript), `pyproject.toml` (Python), `go.mod` (Go)
+3. **Existing components** — check for each: `AGENTS.md`, `CLAUDE.md` (file vs symlink), `.beads/`, `openspec/`, `biome.json`, `ruff.toml`, `.golangci.yml`, `release-please-config.json`, `CONTRIBUTING.md`, `SECURITY.md`, `LICENSE`, `.github/workflows/ci.yml`, `docs/adr/`
+
+Classify: **new repo** (no `.git` or no commits) vs **existing repo** (has commits).
+
+### New Repo Questions
 
 Project name comes from the command argument or conversation context. If unclear, ask.
 
 Use `AskUserQuestion` — one call, two questions:
 
-**Question 1: Language** (single select)
-- TypeScript (Node)
-- Python (uv)
+**Question 1** (header: "Language", single select):
+Which language?
+- TypeScript (Recommended)
+- Python
 - Go
 
-**Question 2: GitHub visibility** (single select)
+**Question 2** (header: "Visibility", single select):
+GitHub visibility?
 - Public (Recommended)
 - Private
 - Skip — no GitHub repo
 
-Everything else is included by default. The scaffold is opinionated. If the user wants to skip a feature, they say so upfront or delete it after.
+Then scaffold **everything**. The scaffold is opinionated — no opt-outs. If the user wants to skip something, they say so upfront or delete it after.
+
+### Existing Repo Questions
+
+Display a summary of what was detected vs what's missing:
+
+```
+Detected:
+  Language:    TypeScript (package.json)
+  AGENTS.md:   missing
+  Beads:       missing
+  OpenSpec:    missing
+  Linting:     .eslintrc found (Biome recommended)
+  ...
+```
+
+Use `AskUserQuestion` — one call, one question:
+
+**Question 1** (header: "Scope", single select):
+How should I apply the missing components?
+- Apply all missing components (Recommended)
+- Let me choose which to add
+- Cancel
+
+If "Let me choose" → second `AskUserQuestion` with **multiSelect** of only the missing components. Options vary by detection, drawn from: AGENTS.md + symlinks, Beads, OpenSpec, Modern linting, Release-please, CI workflow, CONTRIBUTING, SECURITY, LICENSE, Docs structure.
+
+**Non-destructive rules:**
+- Never overwrite existing files unless explicitly asked
+- If `CLAUDE.md` exists as a regular file (not symlink), migrate its content into `AGENTS.md` and replace `CLAUDE.md` with a symlink
+- If legacy lint tools exist (ESLint, Prettier, flake8), note them but don't delete — let the user migrate
 
 ## Phase 2: Scaffold
 
-Order matters — git init first, then build on it.
+For new repos, run everything in order. For existing repos, skip components that already exist (or were deselected).
 
-### Core
+### Core (new repos only)
 
 ```bash
 mkdir -p <project-name>
@@ -59,29 +103,121 @@ Create:
 bd init
 ```
 
-### CONTRIBUTING.md
+### OpenSpec
 
-Generate from the project's established conventions:
-- Code of Conduct reference
-- Getting Started (fork, clone, setup)
-- Development Setup (language-specific prerequisites)
-- Commit format (Conventional Commits)
-- PR guidelines
+```bash
+# Install if not available
+which openspec || npm install -g @fission-ai/openspec@latest
 
-### SECURITY.md
+# Initialize with Claude tooling
+openspec init --tools claude
+```
 
-Generate from the project's established conventions:
-- Supported Versions table
-- Reporting a Vulnerability (GitHub private advisory)
-- Response Timeline (48h initial, 7d status, 30d fix)
-- Disclosure Policy
+After init, add Beads integration to `openspec/config.yaml` — append to the `context` block:
+
+```yaml
+context: |
+  This project uses Beads (bd) for task tracking and agent memory.
+  After planning, convert tasks to Beads issues using `bd create`.
+  Use `bd ready` to find the next available task.
+  Always commit Beads changes alongside code changes.
+
+rules:
+  tasks:
+    - Each top-level task should map to a Beads issue after creation
+    - Include acceptance criteria for each task
+```
+
+### AGENTS.md — Primary AI Config
+
+Create `AGENTS.md` as the **primary** AI instruction file with:
+- Project name and description
+- Language/framework and key commands (build, test, lint, format)
+- Project structure
+
+Include the OpenSpec + Beads workflow section:
+
+```markdown
+## Workflow: OpenSpec + Beads
+
+- **OpenSpec** owns planning: `/opsx:new` → proposal → specs → design → tasks
+- **Beads** owns execution: `bd create` from tasks → `bd ready` → implement → `bd update`
+- Run `/opsx:verify` before archiving to catch spec drift
+- See `openspec/AGENTS.md` for full OpenSpec workflow reference
+```
+
+### AI Tool Symlinks
+
+AGENTS.md is the source of truth. Symlink for every major AI coding tool:
+
+```bash
+mkdir -p .github
+ln -s ../AGENTS.md .github/copilot-instructions.md    # GitHub Copilot
+ln -s AGENTS.md CLAUDE.md                              # Claude Code
+ln -s AGENTS.md .cursorrules                           # Cursor
+ln -s AGENTS.md .windsurfrules                         # Windsurf
+ln -s AGENTS.md .clinerules                            # Cline / Roo Code
+ln -s AGENTS.md GEMINI.md                              # Gemini CLI
+ln -s AGENTS.md CONVENTIONS.md                         # Aider
+ln -s AGENTS.md .replit.md                             # Replit
+```
+
+For existing repos, use `ln -sf` to overwrite stale symlinks. Skip any target that exists as a regular file (non-symlink) — warn the user instead.
+
+### Modern Tooling
+
+Use the modern toolkit. **Only install if no equivalent exists.**
+
+#### TypeScript
+
+**Biome** for linting + formatting (replaces ESLint + Prettier):
+```bash
+npm install --save-dev --save-exact @biomejs/biome
+npx @biomejs/biome init
+```
+Update `biome.json`:
+```json
+{
+  "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+  "organizeImports": { "enabled": true },
+  "linter": { "enabled": true, "rules": { "recommended": true } },
+  "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2 }
+}
+```
+Add scripts to `package.json`:
+```json
+{ "scripts": { "check": "biome check .", "check:fix": "biome check --fix .", "format": "biome format --write ." } }
+```
+
+#### Python
+
+**Ruff** for linting + formatting (replaces flake8, black, isort):
+```bash
+uv add --dev ruff
+```
+Create `ruff.toml`:
+```toml
+target-version = "py312"
+line-length = 88
+[lint]
+select = ["E", "F", "I", "N", "UP", "RUF"]
+[format]
+quote-style = "double"
+```
+
+#### Go
+
+**golangci-lint** — create `.golangci.yml`:
+```yaml
+linters:
+  enable: [errcheck, govet, staticcheck, unused, gosimple, ineffassign]
+```
 
 ### Release Please (Configured but Disabled)
 
-Create the config files so release-please is ready to enable, but **do not enable the workflow by default**.
+Create config files so release-please is ready to enable, but **do not enable by default**.
 
 Create `release-please-config.json`:
-
 ```json
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
@@ -97,32 +233,20 @@ Create `release-please-config.json`:
 ```
 
 Create `.release-please-manifest.json`:
-
 ```json
-{
-  ".": "0.1.0"
-}
+{ ".": "0.1.0" }
 ```
 
-Create `.github/workflows/release-please.yml` with the workflow **disabled** (`on: workflow_dispatch` only, no push trigger):
-
+Create `.github/workflows/release-please.yml` with `workflow_dispatch` only:
 ```yaml
 # Release Please — configured but disabled by default.
-# To enable automatic releases on push to main, replace the `on:` block with:
-#
-#   on:
-#     push:
-#       branches: [main]
-#
+# To enable, replace on: block with: on: push: branches: [main]
 name: Release Please
-
 on:
   workflow_dispatch: {}
-
 permissions:
   contents: write
   pull-requests: write
-
 jobs:
   release-please:
     runs-on: ubuntu-latest
@@ -135,113 +259,17 @@ jobs:
 
 ### CI Workflow
 
-Create `.github/workflows/ci.yml` — language-appropriate test, build, and lint workflow. For TypeScript projects, use `biome check` as the lint step.
+Create `.github/workflows/ci.yml` — language-appropriate test, build, and lint workflow. Use `biome check` (TS), `ruff check` (Python), or `golangci-lint run` (Go) as the lint step.
 
-### Modern Tooling (Biome & Friends)
+For existing repos with a CI workflow: suggest adding the modern lint step if missing.
 
-Use the modern 2025/2026 developer toolkit. **Language-specific defaults below.**
+### CONTRIBUTING.md
 
-#### TypeScript
+Generate from conventions: Code of Conduct reference, Getting Started (fork, clone, setup), Development Setup, Commit format (Conventional Commits), PR guidelines.
 
-- **Biome** for linting + formatting (replaces ESLint + Prettier)
-  ```bash
-  npm install --save-dev --save-exact @biomejs/biome
-  npx @biomejs/biome init
-  ```
-  Then update the generated `biome.json` to use the recommended preset:
-  ```json
-  {
-    "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
-    "organizeImports": {
-      "enabled": true
-    },
-    "linter": {
-      "enabled": true,
-      "rules": {
-        "recommended": true
-      }
-    },
-    "formatter": {
-      "enabled": true,
-      "indentStyle": "space",
-      "indentWidth": 2
-    }
-  }
-  ```
-- Add scripts to `package.json`:
-  ```json
-  {
-    "scripts": {
-      "check": "biome check .",
-      "check:fix": "biome check --fix .",
-      "format": "biome format --write ."
-    }
-  }
-  ```
+### SECURITY.md
 
-#### Python
-
-- **Ruff** for linting + formatting (replaces flake8, black, isort)
-  ```bash
-  uv add --dev ruff
-  ```
-  Create `ruff.toml`:
-  ```toml
-  target-version = "py312"
-  line-length = 88
-
-  [lint]
-  select = ["E", "F", "I", "N", "UP", "RUF"]
-
-  [format]
-  quote-style = "double"
-  ```
-
-#### Go
-
-- **golangci-lint** for comprehensive linting
-  ```bash
-  # CI installs via action; local install is optional
-  ```
-  Create `.golangci.yml`:
-  ```yaml
-  linters:
-    enable:
-      - errcheck
-      - govet
-      - staticcheck
-      - unused
-      - gosimple
-      - ineffassign
-  ```
-
-### AGENTS.md — Primary AI Config
-
-Create `AGENTS.md` as the **primary** AI instruction file with:
-- Project name and description
-- Language/framework and key commands (build, test, lint, format)
-- Project structure
-
-### AI Tool Symlinks
-
-AGENTS.md is the source of truth. Symlink for every major AI coding tool:
-
-```bash
-mkdir -p .github
-ln -s ../AGENTS.md .github/copilot-instructions.md    # GitHub Copilot
-ln -s AGENTS.md CLAUDE.md                              # Claude Code
-ln -s AGENTS.md .cursorrules                           # Cursor (legacy, still read)
-ln -s AGENTS.md .windsurfrules                         # Windsurf (legacy, still read)
-ln -s AGENTS.md .clinerules                            # Cline / Roo Code
-ln -s AGENTS.md GEMINI.md                              # Gemini CLI
-ln -s AGENTS.md CONVENTIONS.md                         # Aider
-ln -s AGENTS.md .replit.md                             # Replit
-```
-
-> **Note on directory-based rules:** Cursor (`.cursor/rules/`) and Windsurf (`.windsurf/rules/`)
-> now support directory-based rule files for granular per-context instructions. The flat-file
-> symlinks above still work and are read by these tools. If the user needs per-directory rules,
-> they can create those directories later — but the single-file symlink covers the common case.
+Generate from conventions: Supported Versions table, Reporting (GitHub private advisory), Response Timeline (48h/7d/30d), Disclosure Policy.
 
 ### Docs Structure
 
@@ -255,25 +283,33 @@ Create `docs/adr/0001-initial-architecture.md` — ADR template with Status, Con
 
 MIT license with current year and user's name.
 
-### Language-Specific Setup
+### Language-Specific Setup (new repos only)
 
-**TypeScript:** `npm init -y`, set `"type": "module"` in package.json, install Biome (see Modern Tooling above).
+**TypeScript:** `npm init -y`, set `"type": "module"`, install Biome.
 
-**Python:** `uv init`, add Ruff (see Modern Tooling above).
+**Python:** `uv init`, add Ruff.
 
-**Go:** `go mod init github.com/<user>/<project-name>`, add golangci-lint config (see Modern Tooling above).
+**Go:** `go mod init github.com/<user>/<project-name>`, add golangci-lint config.
 
 ## Phase 3: Commit + GitHub
+
+### New repos
 
 ```bash
 git add -A
 git commit -m "feat: initial project scaffold"
 ```
 
-If GitHub visibility was selected (not "Skip"):
-
+If GitHub visibility was selected:
 ```bash
 gh repo create <user>/<project-name> --<visibility> --description "<description>" --source . --push
+```
+
+### Existing repos
+
+```bash
+git add -A
+git commit -m "feat: apply essentials scaffold"
 ```
 
 ## Final Summary
@@ -285,18 +321,27 @@ A star is born.
   Language:    <language>
   GitHub:      https://github.com/<user>/<name>
   Lint/Format: <biome|ruff|golangci-lint>
+  OpenSpec:    initialized
+  Beads:       initialized
+
+  Added:       <list of components added>
+  Skipped:     <list of components that already existed>
 
 Next steps:
   - Fill in AGENTS.md with project-specific instructions
   - Enable release-please when you're ready for automated releases
+  - Run /opsx:new to start your first change proposal
   - Start building
 ```
 
 ## Guidelines
 
+- **Re-entrant** — safe to run on new or existing repos; skips what exists
 - **Opinionated by default** — include everything, skip nothing unless told
-- **Two interactions max** — requirements gathering, then execution
-- **Language-aware** — .gitignore, CI, setup commands, and linting all match the chosen language
+- **Two interactions max** — detection + questions, then execution
+- **Non-destructive** — never overwrite existing files; migrate gracefully
+- **Language-aware** — .gitignore, CI, setup, and linting match the chosen language
 - **Symlinks, not copies** — AI tool configs point back to AGENTS.md
 - **Modern toolkit** — Biome over ESLint/Prettier, Ruff over flake8/black, golangci-lint for Go
 - **Release-please ready, not running** — config files present, workflow disabled until opted in
+- **OpenSpec + Beads from day one** — spec-driven planning and task tracking wired together
