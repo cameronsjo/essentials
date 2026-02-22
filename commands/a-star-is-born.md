@@ -1,5 +1,5 @@
 ---
-description: Scaffold a new project -- beads, contributing, security, release-please, GitHub Actions, Claude, AI symlinks, docs
+description: Scaffold a new project or retrofit an existing one -- Beads, OpenSpec, AGENTS.md, Makefile, release-please (disabled), CI, Biome/Ruff, Husky, AI symlinks, docs
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
 ---
 
