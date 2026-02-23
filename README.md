@@ -1,67 +1,73 @@
 # Essentials
 
-Personality commands for celebration, wit, and productivity.
+Core developer workflow toolkit — session rhythm, productivity commands, git maintenance, skill building, and documentation. The desk where you start and end your day.
+
+Designed alongside [dev-toolkit](https://github.com/cameronsjo/dev-toolkit) (building/shipping tools) and [vibes](https://github.com/cameronsjo/vibes) (personality modes).
 
 ## Commands
 
+### Session Rhythm
+
 | Command | Description |
 |---------|-------------|
-| `/hype` | Encouragement and celebration mode - aggressive support energy with Ted Lasso vibes |
-| `/sass` | Sassy responses with 4 intensity levels (mild 🌶️ → maximum 🌶️🌶️🌶️🌶️) |
-| `/roast` | Maximum scrutiny mode - thorough analysis that misses nothing |
-| `/turbo` | Maximum speed execution - parallelize everything, minimize hesitation |
-| `/catchup` | Reload uncommitted changes after `/clear` |
+| `/good-morning` | Start-of-day orientation — git status, memory context, recent activity |
+| `/good-afternoon` | Re-orient after `/clear` or compaction — reload uncommitted changes |
+| `/good-evening` | End-of-session cleanup — multi-Claude git checks, commits, pushes, memory save |
+| `/coffee-break` | Quick checkpoint — commit and push uncommitted work across all repos |
+| `/lunch-break` | Mid-session memory save — capture learnings before compaction |
 
-## Installation
+### Work
+
+| Command | Description |
+|---------|-------------|
+| `/a-star-is-born` | Scaffold a new project or retrofit — Beads, OpenSpec, AGENTS.md, Makefile, CI |
+| `/field-notes` | Capture or review session insights and gotchas |
+| `/field-report` | Write a detailed session narrative to `docs/field-reports/` |
+| `/shuffle-papers` | Sort, standardize, and triage documentation |
+| `/tidy-your-workspace` | Clean up git branches, worktrees, stale refs, stashes |
+
+### Utilities
+
+| Command | Description |
+|---------|-------------|
+| `/root-cause` | Five Whys root cause analysis |
+| `/competitor-analysis` | Analyze a competitor from GitHub URL |
+| `/create-onboarding-guide` | Create developer onboarding guide |
+| `/doc-to-reference` | Convert PDFs, URLs, or docs into structured markdown |
+
+## Skills
+
+Skills are invoked automatically when context matches, or explicitly by name.
+
+| Skill | Description |
+|-------|-------------|
+| `good-morning` | Start-of-day scan |
+| `good-afternoon` | Post-clear re-orient |
+| `good-evening` | End-of-session cleanup |
+| `coffee-break` | Quick git checkpoint |
+| `lunch-break` | Memory save |
+| `a-star-is-born` | Project scaffolding |
+| `field-notes` | Insight capture |
+| `field-report` | Session narrative |
+| `shuffle-papers` | Doc triage |
+| `tidy-your-workspace` | Git maintenance |
+| `git-worktrees` | Worktree management and branch workflows |
+| `skill-builder` | Build proper Claude skills with correct structure |
+| `github-issue` | Write structured GitHub issues |
+| `enforcement-hooks` | Claude Code hooks for engineering standards |
+| `data-storytelling` | Transform data into narratives (What/Why/Next) |
+| `personal-brand` | Build developer presence |
+| `conflict-resolution` | Neutralize workplace conflicts (MOAR framework) |
+| `raycast` | Configure Raycast productivity features |
+| `reminders` | Manage macOS Reminders |
+
+## Install
 
 ```bash
-/plugin install essentials@cameronsjo
+claude plugin install essentials@workbench
+claude plugin enable essentials@workbench
 ```
 
-## Usage
+## License
 
-### Hype Mode
-
-```
-/hype review my self-eval
-/hype I just shipped my first feature
-```
-
-### Sass Mode
-
-```
-/sass explain kubernetes
-/sass spicy review this PR
-/sass maximum why is JavaScript like this
-```
-
-### Roast Mode
-
-```
-/roast this architecture diagram
-/roast my PR description
-```
-
-### Turbo Mode
-
-```
-/turbo improve test coverage to 80%
-/turbo fix all linting errors
-```
-
-### Catchup
-
-```
-/clear
-/catchup
-```
-
-## Philosophy
-
-These commands add personality to Claude without sacrificing quality:
-
-- **Hype** - Genuine encouragement focused on specific wins, not hollow praise
-- **Sass** - Witty but professional, never mean-spirited
-- **Roast** - Thorough critique that shows the path to great
-- **Turbo** - Speed through parallel execution and confident decisions
-- **Catchup** - Context continuity after clearing conversation
+MIT
