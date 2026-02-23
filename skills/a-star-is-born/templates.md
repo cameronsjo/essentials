@@ -237,14 +237,140 @@ rules:
 ```
 
 AGENTS.md workflow section (if OpenSpec initialized):
-```markdown
-## Workflow: OpenSpec + Beads
 
-- **OpenSpec** owns planning: `/opsx:new` → proposal → specs → design → tasks
-- **Beads** owns execution: `bd create` from tasks → `bd ready` → implement → `bd update`
-- Run `/opsx:verify` before archiving to catch spec drift
-- See `openspec/AGENTS.md` for full OpenSpec workflow reference
+````markdown
+## OpenSpec Change Proposal Workflow
+
+A spec-before-code gate for features that add or change behavior. Forces you to define what changes before writing how it changes. Three artifacts — proposal, spec deltas, task list — live in the repo alongside the code.
+
+### When to Use
+
+- New features or capabilities
+- Breaking changes (API, schema, config)
+- Architecture changes
+- Performance/security work that changes behavior
+
+### When to Skip
+
+- Bug fixes restoring intended behavior
+- Typos, formatting, comments
+- Dependency updates (non-breaking)
+- Config-only changes
+- Tests for existing behavior
+
+### Directory Structure
+
 ```
+openspec/
+├── project.md              # Project conventions
+├── specs/                  # Current truth — what IS built
+│   └── <capability>/
+│       └── spec.md         # Requirements + scenarios
+├── changes/                # Proposals — what SHOULD change
+│   ├── <change-id>/
+│   │   ├── proposal.md     # Why, what, impact, all consumers
+│   │   ├── tasks.md        # Implementation checklist
+│   │   ├── design.md       # Technical decisions (optional)
+│   │   └── specs/          # Delta changes to existing specs
+│   │       └── <capability>/
+│   │           └── spec.md # ADDED/MODIFIED/REMOVED requirements
+│   └── archive/            # Completed changes
+```
+
+### Workflow
+
+1. Read existing specs → understand what's covered
+2. Scaffold proposal → `proposal.md`, `tasks.md`, spec deltas
+3. Validate → `openspec validate <id> --strict`
+4. Get approval → review before coding
+5. Implement → follow `tasks.md` in order
+6. Check off tasks → update `tasks.md` when done
+7. Archive after deploy → `openspec archive <id>` (merges deltas into main specs)
+
+### Proposal Template
+
+```markdown
+# Change: <Brief description>
+
+## Why
+<1-2 sentences on problem/opportunity>
+
+## What Changes
+- <Bullet list of changes>
+- <Mark breaking changes with **BREAKING**>
+
+## Impact
+- Affected specs: <list capabilities>
+- Affected code: <key files/systems>
+- All consumers: <grep for every file that reads/writes/passes
+  the affected data — even ones that "already work">
+```
+
+### Spec Delta Format
+
+Spec deltas use three sections: ADDED, MODIFIED, REMOVED. Every requirement MUST have at least one scenario.
+
+```markdown
+## ADDED Requirements
+
+### Requirement: <Name>
+The system SHALL <behavior>...
+
+#### Scenario: <Name>
+- **WHEN** <condition>
+- **AND** <additional condition>
+- **THEN** <expected outcome>
+
+## MODIFIED Requirements
+
+### Requirement: <Name>
+<Full updated requirement text — not a partial diff>
+
+#### Scenario: <Name>
+- **WHEN** <condition>
+- **THEN** <expected outcome>
+
+## REMOVED Requirements
+
+### Requirement: <Name>
+Removed because: <reason>
+```
+
+### Consumer Parity
+
+The pattern that causes bugs: prose says "applies to X and Y," but scenarios only cover X. Implementation follows scenarios, not prose.
+
+Before writing spec deltas:
+
+1. Grep for all consumers of the affected type/config/env var
+2. List every consumer in the proposal's "All consumers" field
+3. Write a scenario per consumer in the spec
+4. Add a task per consumer in `tasks.md`
+
+### Key Rules
+
+- Every requirement MUST have at least one scenario — scenarios are the acceptance criteria
+- Every consumer MUST have a scenario — if the requirement says "both daemon and CLI," both need scenarios
+- Every consumer MUST have a task — untasked consumers don't get implemented
+- MODIFIED requirements paste the full block — the archiver replaces the entire requirement, not a partial diff
+- Change IDs are kebab-case, verb-led: `add-content-hash-sync`, `update-drift-detection`, `remove-legacy-hooks`
+
+### CLI Commands
+
+```
+openspec list                     # Active changes
+openspec list --specs             # Existing specifications
+openspec show <item>              # View change or spec
+openspec validate <id> --strict   # Validate before coding
+openspec archive <id> --yes       # Archive after deploy
+```
+
+### Integration with Beads
+
+- **OpenSpec** owns planning: proposal → specs → design → tasks
+- **Beads** owns execution: `bd create` from tasks → `bd ready` → implement → `bd update`
+- Run `openspec validate` before archiving to catch spec drift
+````
 
 ## AI Tool Symlinks
 

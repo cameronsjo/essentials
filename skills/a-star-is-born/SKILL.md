@@ -90,7 +90,7 @@ If "Let me choose" → second `AskUserQuestion` with **multiSelect** of only the
 
 **Non-destructive rules:**
 - Never overwrite existing files unless explicitly asked
-- If `CLAUDE.md` exists as a regular file (not symlink), migrate its content into `AGENTS.md` and replace `CLAUDE.md` with a symlink
+- **AGENTS.md is the single source of truth.** If any AI instruction file (`CLAUDE.md`, `.cursorrules`, `.windsurfrules`, `.clinerules`, `GEMINI.md`, `CONVENTIONS.md`, `.replit.md`, `.github/copilot-instructions.md`) exists as a regular file (not symlink), migrate its content into `AGENTS.md`, deduplicate, and replace with a symlink to `AGENTS.md`
 - If legacy lint tools exist (ESLint, Prettier, flake8), note them but don't delete — let the user migrate
 
 ## Phase 2: Scaffold
@@ -122,15 +122,21 @@ which openspec || npm install -g @fission-ai/openspec@latest
 openspec init --tools claude
 ```
 
-After init, add Beads integration to `openspec/config.yaml` — see `templates.md` for the config block.
+After init:
+1. Add Beads integration to `openspec/config.yaml` — see `templates.md` for the config block
+2. Include the full Change Proposal Workflow in `AGENTS.md` — see `templates.md` for the complete workflow section
 
-### AGENTS.md — Primary AI Config
+### AGENTS.md — Single Source of Truth
 
-Create `AGENTS.md` as the **primary** AI instruction file with:
+Create `AGENTS.md` as the **sole** AI instruction file. All other AI tool configs are symlinks back to this file.
+
+Contents:
 - Project name and description
 - Language/framework and key commands (build, test, lint, format)
 - Project structure
-- If OpenSpec was initialized, include the workflow section (see `templates.md`)
+- If OpenSpec was initialized, include the full Change Proposal Workflow section (see `templates.md`)
+
+For existing repos: if other AI instruction files exist as regular files, merge their unique content into `AGENTS.md` first, then replace with symlinks.
 
 ### AI Tool Symlinks
 
@@ -244,7 +250,7 @@ Next steps:
   - Enable release-please when you're ready for automated releases
     (also enable "Allow GitHub Actions to create and approve pull requests"
      in repo Settings → Actions → General → Workflow permissions)
-  - Run /opsx:new to start your first change proposal (if OpenSpec initialized)
+  - Start a change proposal: scaffold openspec/changes/<change-id>/ (if OpenSpec initialized)
   - Start building
 ```
 
