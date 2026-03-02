@@ -2,7 +2,7 @@
 name: a-star-is-born
 description: >
   Scaffold a new project or retrofit an existing one. Beads, OpenSpec, AGENTS.md, Makefile,
-  release-please (disabled), CI, Biome/Ruff, Husky, AI symlinks, docs structure.
+  Biome/Ruff, Husky, AI symlinks, docs structure. CI/CD and release-please optional.
 category: workflow
 ---
 
@@ -61,7 +61,12 @@ Set up Husky for git hooks (lint-staged on pre-commit)?
 - Yes — install Husky + lint-staged (Recommended for team repos)
 - Skip — solo project, I'll manage hooks myself
 
-Then scaffold everything selected. The scaffold is opinionated by default — OpenSpec and Husky are the only opt-out questions. If the user wants to skip other components, they say so upfront or delete them after.
+**Question 5** (header: "CI/CD", single select):
+Set up GitHub Actions workflows (CI + release-please)?
+- Yes — create CI workflow and release-please config (Recommended)
+- Skip — I use a different CI system or don't want GitHub Actions
+
+Then scaffold everything selected. The scaffold is opinionated by default — OpenSpec, Husky, and CI/CD are the only opt-out questions. If the user wants to skip other components, they say so upfront or delete them after.
 
 ### Existing Repo Questions
 
@@ -161,6 +166,8 @@ Create `Makefile` with `help` as default target. Language-appropriate targets fo
 
 ### Release Please (Configured but Disabled)
 
+**Skip if the user opted out of CI/CD.**
+
 Create config files ready to enable but **disabled by default** (`workflow_dispatch` only). See `templates.md` for all three files.
 
 **Repo-level setting required:** After creating the GitHub repo (or on existing repos), enable "Allow GitHub Actions to create and approve pull requests" under Settings → Actions → General → Workflow permissions. Without this, release-please will fail even though the workflow YAML has `pull-requests: write`. Run:
@@ -170,6 +177,8 @@ gh api repos/{owner}/{repo}/actions/permissions/workflow -X PUT -f default_workf
 ```
 
 ### CI Workflow
+
+**Skip if the user opted out of CI/CD.**
 
 Create `.github/workflows/ci.yml` — language-appropriate test, build, and lint workflow. Use `biome check` (TS), `ruff check` (Python), or `golangci-lint run` (Go) as the lint step.
 
@@ -216,7 +225,7 @@ If GitHub visibility was selected, generate a description first:
 gh repo create <user>/<project-name> --<visibility> --description "<generated-description>" --source . --push
 ```
 
-After repo creation, enable Actions PR permissions so release-please can create PRs:
+If CI/CD was selected, enable Actions PR permissions so release-please can create PRs:
 ```bash
 gh api repos/<user>/<project-name>/actions/permissions/workflow -X PUT -f default_workflow_permissions=write -F can_approve_pull_request_reviews=true
 ```
@@ -247,9 +256,7 @@ A star is born.
 
 Next steps:
   - Fill in AGENTS.md with project-specific instructions
-  - Enable release-please when you're ready for automated releases
-    (also enable "Allow GitHub Actions to create and approve pull requests"
-     in repo Settings → Actions → General → Workflow permissions)
+  - Enable release-please when you're ready for automated releases (if CI/CD scaffolded)
   - Start a change proposal: scaffold openspec/changes/<change-id>/ (if OpenSpec initialized)
   - Start building
 ```
@@ -263,6 +270,6 @@ Next steps:
 - **Language-aware** — .gitignore, CI, setup, and linting match the chosen language
 - **Symlinks, not copies** — AI tool configs point back to AGENTS.md
 - **Modern toolkit** — Biome over ESLint/Prettier, Ruff over flake8/black, golangci-lint for Go
-- **Release-please ready, not running** — config files present, workflow disabled until opted in
+- **CI/CD optional** — GitHub Actions workflows (CI + release-please) are opt-out; respects environments that use other CI systems
 - **Makefile as entry point** — every project gets a Makefile with help, check, fix, test targets
 - **OpenSpec and Husky optional** — recommended but not forced; external dependencies get an opt-out
