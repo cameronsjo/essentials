@@ -10,8 +10,7 @@
     {
       "name": "essentials",
       "source": "./.claude-plugin",
-      "description": "Core developer workflow toolkit: productivity commands, brainstorming, git worktrees, skill building, enforcement hooks, and session management",
-      "version": "2.0.0"
+      "description": "Core developer workflow toolkit: productivity commands, brainstorming, git worktrees, skill building, enforcement hooks, and session management"
     }
   ]
 }
