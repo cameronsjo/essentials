@@ -4,6 +4,7 @@ description: >
   This skill should be used when the user asks to "write an issue", "give me a GitHub issue",
   "file an issue for this", "write that up as an issue", or wants to distill an investigation
   or conversation into a structured GitHub issue they can copy-paste or create via gh CLI.
+  Handles both owned repos (direct creation) and external repos (template-aware script generation).
 category: workflow
 ---
 
@@ -41,7 +42,18 @@ Identify which repo this issue belongs in. Sources of truth:
 - Inferred from context (Bosun alert dedup -> bosun repo)
 - Ask if ambiguous
 
-### 3. Draft the Issue
+Then determine ownership:
+
+```bash
+gh api "repos/OWNER/REPO" --jq '.permissions.push // false'
+```
+
+- **`true`** = Owned repo. Use the **Direct Creation** path (Step 3a)
+- **`false`** = External repo. Use the **External Repo** path (Step 3b)
+
+If `gh` is blocked by git-guardrails for the target repo, that also confirms external.
+
+### 3a. Draft the Issue (Owned Repo)
 
 Generate a markdown block the user can copy-paste. Structure:
 
@@ -73,9 +85,7 @@ Generate a markdown block the user can copy-paste. Structure:
 <!-- Comma-separated: bug, enhancement, alerting, infra, etc. -->
 ```
 
-### 4. Present Options
-
-After rendering the markdown block, ask the user:
+Then present options:
 
 | Option | Action |
 |---|---|
@@ -86,13 +96,73 @@ After rendering the markdown block, ask the user:
 If creating via `gh`:
 
 ```bash
-gh issue create --repo owner/repo --title "title" --body "$(cat <<'EOF'
-...issue body...
-EOF
-)"
+gh issue create --repo owner/repo --title "title" --body-file /tmp/issue-body.md
 ```
 
 Add labels with `--label` flags if the repo has them configured.
+
+### 3b. Draft the Issue (External Repo)
+
+External repos require the user to run the `gh` command themselves (git-guardrails blocks writes to unowned repos). Follow this workflow:
+
+#### Look Up Issue Templates
+
+Check if the target repo has issue templates:
+
+```bash
+gh api "repos/OWNER/REPO/contents/.github/ISSUE_TEMPLATE" --jq '.[].name'
+```
+
+If templates exist, read the relevant one (usually `feature_request.yml` or `bug_report.yml`):
+
+```bash
+gh api "repos/OWNER/REPO/contents/.github/ISSUE_TEMPLATE/feature_request.yml" --jq '.content' | base64 -d
+```
+
+#### Formulate the Body
+
+- **If a template exists**: Map session context to the template's fields. YAML `type: textarea` blocks become markdown `### {label}` sections. Respect `required` fields
+- **If no template**: Use the standard structure from Step 3a
+
+#### Write the Body File
+
+Write the issue body to a temp file. This avoids shell quoting issues (apostrophes, backticks, JSON in markdown all break HEREDOC patterns):
+
+```bash
+# Write to: /tmp/{repo-name}-issue-body.md
+```
+
+**MUST** use the Write tool, not HEREDOC or echo — markdown with code blocks, tables, and special characters is fragile in shell strings.
+
+#### Generate the Script
+
+Write a minimal shell script the user can execute:
+
+```bash
+#!/usr/bin/env bash
+gh issue create --repo OWNER/REPO \
+  --title "issue title" \
+  --body-file /tmp/{repo-name}-issue-body.md
+```
+
+**MUST** use `--body-file` instead of `--body` with HEREDOC. This is the key lesson — inline body strings break on:
+
+- Smart quotes and apostrophes (`There's`, `don't`)
+- Backtick-fenced code blocks inside the body
+- JSON examples with nested quotes
+- Pipe characters in markdown tables
+
+Write the script to `/tmp/create-{repo-name}-issue.sh` and make it executable.
+
+#### Hand Off to User
+
+Tell the user to run:
+
+```
+/tmp/create-{repo-name}-issue.sh
+```
+
+Report the resulting issue URL after they execute it.
 
 ## Style Guide
 
@@ -108,3 +178,4 @@ Add labels with `--label` flags if the repo has them configured.
 - **Link related context** — reference other issues, PRs, or docs if relevant
 - **Skip the issue if it's trivial** — if the fix is a one-liner you're about to commit, just commit it
 - **Conversation context is the input** — the skill synthesizes from what's already been discussed, not from scratch
+- **Always use `--body-file`** — never inline issue bodies in shell commands. Write to a temp file first
