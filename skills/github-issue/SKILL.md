@@ -5,7 +5,10 @@ description: >
   "file an issue for this", "write that up as an issue", or wants to distill an investigation
   or conversation into a structured GitHub issue they can copy-paste or create via gh CLI.
   Handles both owned repos (direct creation) and external repos (template-aware script generation).
-category: workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # GitHub Issue

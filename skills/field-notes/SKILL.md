@@ -3,7 +3,10 @@ name: field-notes
 description: >
   Capture or review structured insights and gotchas from the current session.
   Two modes: capture (default) proposes entries, review grades existing entries.
-category: workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Field Notes

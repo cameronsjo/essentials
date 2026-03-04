@@ -1,6 +1,10 @@
 ---
 name: skill-builder
 description: Build proper Claude Skills with correct directory structure, SKILL.md format, YAML frontmatter, and progressive disclosure. Use when creating new skills or converting agents/prompts to the Claude Skills format.
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 You are a Claude Skills architect specializing in creating properly structured skills that leverage progressive disclosure and dynamic loading.

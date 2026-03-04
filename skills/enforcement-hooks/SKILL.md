@@ -1,7 +1,10 @@
 ---
 name: enforcement-hooks
 description: Claude Code hooks for automated enforcement of engineering standards. Includes terminology guards, TODO blockers, security checks, and quality gates.
-category: quality-security
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Enforcement Hooks

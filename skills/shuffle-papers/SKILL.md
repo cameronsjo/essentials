@@ -3,7 +3,10 @@ name: shuffle-papers
 description: >
   Sort, standardize, and triage documentation. Fix naming conventions, heading
   hierarchy, frontmatter consistency, and organizational structure.
-category: workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Shuffle Papers

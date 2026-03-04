@@ -3,7 +3,10 @@ name: field-report
 description: >
   Write a detailed narrative of a significant session. Creates a reference doc
   in docs/field-reports/ and links it via beads for searchability.
-category: workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Field Report

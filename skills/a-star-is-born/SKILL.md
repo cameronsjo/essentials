@@ -3,7 +3,10 @@ name: a-star-is-born
 description: >
   Scaffold a new project or retrofit an existing one. Beads, OpenSpec, AGENTS.md, Makefile,
   Biome/Ruff, Husky, AI symlinks, docs structure. CI/CD and release-please optional.
-category: workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # A Star Is Born

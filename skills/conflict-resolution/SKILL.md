@@ -1,6 +1,10 @@
 ---
 name: conflict-resolution
 description: Neutralize workplace conflicts using the MOAR framework
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Conflict Resolution

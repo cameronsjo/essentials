@@ -1,10 +1,13 @@
 ---
-name: git-workflow-tools
+name: git-worktrees
 description: >
   Git productivity tools for cloning, worktree management, and branch workflows.
   Suggest when: user needs isolation for feature work, PR review, or parallel development.
   Not every repo needs worktrees — offer as an option, don't enforce.
-category: development-workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Git Workflow Tools

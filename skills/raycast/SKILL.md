@@ -1,6 +1,10 @@
 ---
 name: raycast
 description: Configure Raycast productivity features for developers. Use when setting up snippets, script commands, hotkeys, quicklinks, or window management. Covers creating text expansions, shell script integrations, and workflow automation for macOS.
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Raycast Configuration

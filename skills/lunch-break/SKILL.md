@@ -3,7 +3,10 @@ name: lunch-break
 description: >
   Mid-session memory save. Capture what we've figured out before it gets lost
   to compaction or context drift. Quick in, quick out.
-category: workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Lunch Break

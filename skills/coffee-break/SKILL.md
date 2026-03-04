@@ -3,7 +3,10 @@ name: coffee-break
 description: >
   Quick code checkpoint. Git status scan, stash check, commit and push
   uncommitted work. No memory operations.
-category: workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Coffee Break

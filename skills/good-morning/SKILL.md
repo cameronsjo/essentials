@@ -3,7 +3,10 @@ name: good-morning
 description: >
   Start-of-day orientation. Read-only scan of git status, recent activity,
   memory context, and open issues across all working directories.
-category: workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Good Morning

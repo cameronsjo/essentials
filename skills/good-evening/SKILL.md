@@ -3,7 +3,10 @@ name: good-evening
 description: >
   End-of-session cleanup. Parallel git checks across all repos, batched
   decisions, CLAUDE.md revision, and memory save.
-category: workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Have a Good Evening

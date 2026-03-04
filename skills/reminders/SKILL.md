@@ -1,6 +1,10 @@
 ---
 name: reminders
 description: Create, query, complete, and delete macOS Reminders. Use when the user asks to set a reminder, check their tasks, mark something done, or automate recurring task creation.
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Reminders

@@ -3,7 +3,10 @@ name: good-afternoon
 description: >
   Re-orient after /clear or context compaction. Reload uncommitted changes
   and recent commits to restore working context.
-category: workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Good Afternoon

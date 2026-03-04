@@ -3,7 +3,10 @@ name: tidy-your-workspace
 description: >
   Clean up git branches, worktrees, stale remote refs, and forgotten stashes.
   Structural housekeeping for the repo.
-category: workflow
+license: MIT
+metadata:
+  author: cameronsjo
+  version: "1.0"
 ---
 
 # Tidy Your Workspace
