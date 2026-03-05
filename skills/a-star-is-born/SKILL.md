@@ -7,7 +7,6 @@ license: MIT
 metadata:
   author: cameronsjo
   version: "1.0"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent
 ---
 
 # A Star Is Born
