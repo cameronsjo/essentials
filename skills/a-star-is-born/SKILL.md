@@ -7,6 +7,7 @@ license: MIT
 metadata:
   author: cameronsjo
   version: "1.0"
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent
 ---
 
 # A Star Is Born
@@ -276,3 +277,20 @@ Next steps:
 - **CI/CD optional** — GitHub Actions workflows (CI + release-please) are opt-out; respects environments that use other CI systems
 - **Makefile as entry point** — every project gets a Makefile with help, check, fix, test targets
 - **OpenSpec and Husky optional** — recommended but not forced; external dependencies get an opt-out
+
+## AskUserQuestion Fallback
+
+If `AskUserQuestion` returns empty answers (tool result contains no selections, just "." or blank), do NOT assume defaults or re-ask with the same tool. Instead:
+
+1. Acknowledge that the answers didn't come through (known platform bug, anthropics/claude-code#29962)
+2. Re-ask the same questions as plain text in your response
+3. Wait for the user to reply in chat before proceeding
+
+Example fallback:
+
+> Your selections didn't come through (known Claude Code issue). Could you tell me:
+> 1. **Language** — TypeScript, Python, or Go?
+> 2. **Visibility** — Public, Private, or Skip GitHub?
+> 3. **OpenSpec** — Yes or Skip?
+> 4. **Husky** — Yes or Skip?
+> 5. **CI/CD** — Yes or Skip?
